@@ -1,0 +1,13 @@
+{
+  "authorId": 1,
+  "chaptersNumber": 0,
+  "creationDate": "20190127 14:00:00",
+  "finalReleaseDate": null,
+  "lastModificationDate": null,
+  "originalStory": true,
+  "published": false,
+  "status": "PROGRESS",
+  "summary": "test résumé",
+  "title": "test 1",
+  "type": "FANTASY"
+}
