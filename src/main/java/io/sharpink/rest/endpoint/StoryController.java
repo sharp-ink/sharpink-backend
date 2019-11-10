@@ -5,8 +5,12 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import io.sharpink.rest.exception.CustomApiError;
+import io.sharpink.rest.exception.UnprocessableEntity422Exception;
+import io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +21,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.sharpink.rest.dto.story.StoryDto;
-import io.sharpink.rest.exception.ResourceNotFoundException;
+import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.StoryService;
+
+import static io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum.TITLE_ALREADY_USED;
 
 @RestController
 @RequestMapping("/stories")
@@ -39,7 +45,7 @@ public class StoryController {
 	public List<StoryDto> getStories() {
 		return storyService.getAllStories();
 	}
-	
+
 	/**
 	 * Renvoie la {@code Story} ayant l'id passé en paramètre.
 	 */
@@ -49,7 +55,7 @@ public class StoryController {
 		if (optionalStoryDto.isPresent()) {
 			return optionalStoryDto.get();
 		} else {
-			throw new ResourceNotFoundException();
+			throw new NotFound404Exception();
 		}
 	}
 
@@ -58,10 +64,14 @@ public class StoryController {
 	 * lors de l'insertion en base de données.
 	 */
 	@PostMapping("")
-	@ResponseStatus(HttpStatus.CREATED)
-	public Long createStory(@RequestBody @Valid StoryDto storyDto) {
+	public ResponseEntity<?> createStory(@RequestBody @Valid StoryDto storyDto) {
 		System.out.println("POST /stories - storyDto = " + storyDto);
-		return storyService.createStory(storyDto);
+		try {
+		  Long storyId = storyService.createStory(storyDto);
+      return new ResponseEntity<>(storyId, HttpStatus.CREATED);
+		} catch (UnprocessableEntity422Exception e) {
+        return new ResponseEntity<>(new CustomApiError(e.getReason().name()), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
 	}
 
 }

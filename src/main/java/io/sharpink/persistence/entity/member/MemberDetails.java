@@ -32,6 +32,9 @@ public class MemberDetails {
 	@Column(name = "LASTNAME")
 	protected String lastName;
 
+	@Column(name = "PROFILE_PICTURE")
+  protected String profilePicture;
+
 	@Column(name = "BIRTH_DATE")
 	protected Date birthDate;
 
@@ -47,8 +50,9 @@ public class MemberDetails {
 	@Column(name = "IS_EMAIL_PUBLIC")
 	protected boolean emailPublished;
 
-	@Column(name = "FREE_MESSAGE")
-	protected String freeMessage;
+	@Column(name = "CUSTOM_MESSAGE")
+	protected String
+    customMessage;
 
 	@Column(name = "BIOGRAPHY")
 	protected String biography;

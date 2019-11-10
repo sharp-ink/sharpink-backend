@@ -57,6 +57,7 @@ public class Member {
 	protected Long storiesCount;
 
 	@OneToMany(mappedBy = "author")
+
 	@LazyCollection(LazyCollectionOption.TRUE)
 	protected List<Story> stories;
 

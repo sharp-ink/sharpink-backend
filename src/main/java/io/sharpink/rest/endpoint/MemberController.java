@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.sharpink.rest.dto.member.MemberDto;
-import io.sharpink.rest.exception.ResourceNotFoundException;
+import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.MemberService;
 
 @RestController
@@ -28,18 +28,18 @@ public class MemberController {
 
 	@GetMapping("")
 	public List<MemberDto> getMembers() {
-		
+
 		return memberService.getAllMembers();
-		
+
 	}
-	
+
 	@GetMapping("/{id}")
 	public MemberDto getMember(@PathVariable Long id) {
 		Optional<MemberDto> optionalMemberDto = memberService.getMember(id);
 		if (optionalMemberDto.isPresent()) {
 			return optionalMemberDto.get();
 		} else {
-			throw new ResourceNotFoundException();
+			throw new NotFound404Exception();
 		}
 	}
 

@@ -2,3 +2,9 @@
 ###  Mac ###
 .DS_Store
 
+### Intellij ###
+.idea
+sharp-ink-backend.iml
+
+target/
+

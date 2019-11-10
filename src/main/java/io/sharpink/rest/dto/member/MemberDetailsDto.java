@@ -12,21 +12,14 @@ import lombok.Data;
 public class MemberDetailsDto {
 
 	protected String firstName;
-
 	protected String lastName;
-
+	protected String profilePicture;
 	protected LocalDate birthDate;
-
 	protected String country;
-
 	protected String city;
-
 	protected String job;
-
 	protected boolean emailPublished;
-
-	protected String freeMessage;
-
+	protected String customMessage;
 	protected String biography;
-	
+
 }

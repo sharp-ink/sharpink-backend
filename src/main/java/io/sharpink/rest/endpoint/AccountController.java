@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.sharpink.rest.dto.member.MemberDto;
-import io.sharpink.rest.exception.AuthenticationFailureException;
+import io.sharpink.rest.exception.Unauthorized401Exception;
 import io.sharpink.service.AccountService;
 
 @RestController
 @RequestMapping("/accounts")
 @CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 86400)
 public class AccountController {
-	
+
 	private AccountService accountService;
 
 	@Autowired
@@ -27,15 +27,15 @@ public class AccountController {
 
 	@RequestMapping(value = "log-in", method = { RequestMethod.GET, RequestMethod.HEAD })
 	public MemberDto logIn(@RequestParam String login, @RequestParam String password) {
-		
+
 		Optional<MemberDto> authenticateMember = accountService.logIn(login, password);
 
 		if (authenticateMember.isPresent()) {
 			return authenticateMember.get();
 		} else {
-			throw new AuthenticationFailureException();
+			throw new Unauthorized401Exception();
 		}
-		
+
 	}
 
 }

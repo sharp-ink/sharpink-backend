@@ -20,7 +20,7 @@ public class MemberMapper {
 
 	/**
 	 * Construit un objet {@code MemberDto} à partir d'un objet {@code Member}.
-	 * 
+	 *
 	 * @param source            L'entité {@code Member} à partir de laquelle on
 	 *                          construit notre objet.
 	 * @param shouldLoadStories Indique s'il faut ou non charger la liste des
@@ -56,7 +56,7 @@ public class MemberMapper {
 
 	/**
 	 * Construit une {@code List<MemberDto>} à partir d'une {@code List<Member>}.
-	 * 
+	 *
 	 * @param source            La liste des {@code Member} à partir duquel on
 	 *                          construit notre liste de {@code MemberDto}.
 	 * @param shouldLoadStories Indique s'il faut ou non charger la liste des
@@ -82,12 +82,14 @@ public class MemberMapper {
 	}
 
 	private MemberDetailsDto map(MemberDetails source) {
-		
+
 		return MemberDetailsDto.builder()
 			.firstName(source.getFirstName())
-			.lastName(source.getLastName()).build();
-		// TODO : finir de mapper les champs de MemberDetails
-		
+			.lastName(source.getLastName())
+      .profilePicture(source.getProfilePicture())
+      // TODO : finir de mapper les champs de MemberDetails
+      .build();
+
 	}
 
 }
