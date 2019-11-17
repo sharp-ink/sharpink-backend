@@ -28,7 +28,6 @@ import static io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum.TITLE_
 
 @RestController
 @RequestMapping("/stories")
-@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 86400)
 public class StoryController {
 
 	private StoryService storyService;

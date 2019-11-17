@@ -3,20 +3,21 @@ package io.sharpink.rest.endpoint;
 import java.util.List;
 import java.util.Optional;
 
+import io.sharpink.rest.dto.member.MemberDetailsDto;
+import io.sharpink.rest.dto.member.profile.MemberProfileDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import io.sharpink.rest.dto.member.MemberDto;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.MemberService;
 
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+
 @RestController
 @RequestMapping("/members")
-@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 86400)
 public class MemberController {
 
 	private MemberService memberService;
@@ -28,9 +29,7 @@ public class MemberController {
 
 	@GetMapping("")
 	public List<MemberDto> getMembers() {
-
 		return memberService.getAllMembers();
-
 	}
 
 	@GetMapping("/{id}")
@@ -43,4 +42,8 @@ public class MemberController {
 		}
 	}
 
+	@PutMapping("/{id}/profile")
+  public MemberDto updateMemberProfile(@PathVariable Long id, @RequestBody MemberProfileDto memberProfileDto) {
+	  return memberService.updateMemberProfile(id, memberProfileDto);
+  }
 }

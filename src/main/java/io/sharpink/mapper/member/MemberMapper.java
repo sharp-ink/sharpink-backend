@@ -3,6 +3,7 @@ package io.sharpink.mapper.member;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.sharpink.rest.dto.member.profile.MemberProfileDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +35,6 @@ public class MemberMapper {
 	 * @return Un {@code Member}
 	 */
 	public MemberDto map(Member source, boolean shouldLoadStories) {
-
 		MemberDto target = MemberDto.builder()
 			.id(source.getId())
 			.nickname(source.getNickname())
@@ -51,7 +51,6 @@ public class MemberMapper {
 		}
 
 		return target;
-
 	}
 
 	/**
@@ -70,26 +69,27 @@ public class MemberMapper {
 	 * @return Une {@code List<MemberDto>}
 	 */
 	public List<MemberDto> map(List<Member> source, boolean shouldLoadStories) {
-
 		List<MemberDto> target = new ArrayList<>();
-
 		for (Member member : source) {
 			target.add(map(member, shouldLoadStories));
 		}
-
 		return target;
-
 	}
 
 	private MemberDetailsDto map(MemberDetails source) {
-
 		return MemberDetailsDto.builder()
 			.firstName(source.getFirstName())
 			.lastName(source.getLastName())
       .profilePicture(source.getProfilePicture())
       // TODO : finir de mapper les champs de MemberDetails
       .build();
-
 	}
 
+  public MemberDetails map(MemberProfileDto memberProfileDto) {
+	  return MemberDetails.builder()
+      .firstName(memberProfileDto.getFirstName())
+      .lastName(memberProfileDto.getLastName())
+      // TODO mapper les autres champs
+      .build();
+  }
 }

@@ -3,13 +3,7 @@ package io.sharpink.persistence.entity.member;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -42,7 +36,7 @@ public class Member {
 
 	// Informations complémentaires, optionnelles. Suppression du getter généré par
 	// Lombok pour utiliser un getter spécial (voir plus bas)
-	@OneToOne(mappedBy = "member")
+	@OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Getter(AccessLevel.NONE)
 	protected MemberDetails memberDetails;
 
@@ -57,7 +51,6 @@ public class Member {
 	protected Long storiesCount;
 
 	@OneToMany(mappedBy = "author")
-
 	@LazyCollection(LazyCollectionOption.TRUE)
 	protected List<Story> stories;
 
