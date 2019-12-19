@@ -54,8 +54,7 @@ public class Member {
 	@LazyCollection(LazyCollectionOption.TRUE)
 	protected List<Story> stories;
 
-	// getter personnalisé pour renvoyer un Optional<MemberDetails> au lieu d'un
-	// MemberDetails
+	// getter personnalisé pour renvoyer un Optional<MemberDetails> au lieu d'un MemberDetails
 	public Optional<MemberDetails> getMemberDetails() {
 		return Optional.ofNullable(memberDetails);
 	}

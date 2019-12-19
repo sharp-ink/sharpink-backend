@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "STORY_CHAPTER")
@@ -22,6 +23,7 @@ public class Chapter implements Comparable<Chapter> {
 	private int id;
 
 	@ManyToOne
+  @ToString.Exclude
 	private Story story;
 
 	@Column(name = "POSITION", columnDefinition = "Numéro du chapitre (commence à 1)")

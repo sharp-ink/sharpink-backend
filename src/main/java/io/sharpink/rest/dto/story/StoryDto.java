@@ -23,41 +23,33 @@ public class StoryDto {
 
 	private Long id;
 
-	@NotEmpty
-	@Size(min = 3, max = 100)
 	private String title;
 
-	@NotNull
 	private String type;
 
-	@NotNull
 	private boolean originalStory;
 
-	@NotNull
 	private String status;
 
-	@NotNull
 	private String summary;
 
 	private boolean published;
 
-	@NotNull
 	private Long authorId;
 
-	@NotNull
 	private Long chaptersNumber;
 
 	private MemberDto author; // peut être null
 
 	private List<ChapterDto> chapters; // peut être null
 
-	@NotNull
 	@JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
 	private LocalDateTime creationDate;
 
 	@JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
 	private LocalDateTime lastModificationDate;
 
+  @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
 	private LocalDateTime finalReleaseDate;
-	
+
 }

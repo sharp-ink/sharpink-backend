@@ -5,26 +5,21 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import io.sharpink.rest.dto.story.StoryPatchDto;
 import io.sharpink.rest.exception.CustomApiError;
 import io.sharpink.rest.exception.UnprocessableEntity422Exception;
 import io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.sharpink.rest.dto.story.StoryDto;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.StoryService;
 
 import static io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum.TITLE_ALREADY_USED;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/stories")
@@ -42,6 +37,7 @@ public class StoryController {
 	 */
 	@GetMapping("")
 	public List<StoryDto> getStories() {
+	  System.out.println("GET /stories");
 		return storyService.getAllStories();
 	}
 
@@ -50,6 +46,7 @@ public class StoryController {
 	 */
 	@GetMapping("/{id}")
 	public StoryDto getStory(@PathVariable Long id) {
+	  System.out.println("GET /stories/" + id);
 		Optional<StoryDto> optionalStoryDto = storyService.getStory(id);
 		if (optionalStoryDto.isPresent()) {
 			return optionalStoryDto.get();
@@ -67,10 +64,23 @@ public class StoryController {
 		System.out.println("POST /stories - storyDto = " + storyDto);
 		try {
 		  Long storyId = storyService.createStory(storyDto);
-      return new ResponseEntity<>(storyId, HttpStatus.CREATED);
+      return new ResponseEntity<>(storyId, CREATED);
 		} catch (UnprocessableEntity422Exception e) {
-        return new ResponseEntity<>(new CustomApiError(e.getReason().name()), HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(new CustomApiError(e.getReason().name()), UNPROCESSABLE_ENTITY);
     }
 	}
+
+	@PatchMapping("/{id}")
+  public ResponseEntity<?> updateStory(@PathVariable Long id, @RequestBody @Valid StoryPatchDto storyPatchDto) {
+	  System.out.println("PATCH /stories/" + id + " - storyPatchDto = " + storyPatchDto);
+	  try {
+	    StoryDto storyDto = storyService.updateStory(id, storyPatchDto);
+      return new ResponseEntity<>(storyDto, OK);
+    } catch (UnprocessableEntity422Exception e) {
+      return new ResponseEntity<>(new CustomApiError(e.getReason().name()), UNPROCESSABLE_ENTITY);
+    } catch (Exception e) {
+	    return new ResponseEntity<>(new CustomApiError(), INTERNAL_SERVER_ERROR);
+    }
+  }
 
 }

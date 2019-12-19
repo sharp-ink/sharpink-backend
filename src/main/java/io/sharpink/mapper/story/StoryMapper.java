@@ -3,6 +3,7 @@ package io.sharpink.mapper.story;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.sharpink.persistence.entity.story.Story.StoryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ import io.sharpink.rest.dto.story.StoryDto;
  * <li>des {@code Story} en {@code StoryDto}</li>
  * <li>des {@code StoryDto} en {@code Story}</li>
  * </ul>
- * 
+ *
  * @author scaunois
  *
  */
@@ -33,17 +34,17 @@ public class StoryMapper {
 
 	@Autowired
 	private ChapterMapper chapterMapper;
-	
+
 	@Autowired
 	private MemberDao memberDao;
 
 	// **************************************************************
 	// Story --> StoryDto
 	// **************************************************************
-	
+
 	/**
 	 * Crée un {@code StoryDto} à partir d'une {@code Story}.
-	 * 
+	 *
 	 * @param source : une entité {@code Story}.
 	 * @return le bean {@code StoryDto} correspondant.
 	 */
@@ -64,19 +65,19 @@ public class StoryMapper {
 			.lastModificationDate(DateUtil.toLocalDateTime(source.getLastModificationDate()))
 			.finalReleaseDate(DateUtil.toLocalDateTime(source.getFinalReleaseDate()))
 			.build();
-		
+
 		// on ne charge les chapitres que si demandé
 		if (shouldLoadChapters) {
 			target.setChapters(chapterMapper.mapDtos(source.getChapters()));
 		}
-		
+
 		return target;
-		
+
 	}
 
 	/**
 	 * Crée une {@List<StoryDto>} à partir d'une {@code List<Story>}.
-	 * 
+	 *
 	 * @param source : une {@code List<Story>}.
 	 * @return la {@List<StoryDto>} correspondante.
 	 */
@@ -97,43 +98,34 @@ public class StoryMapper {
 	// **************************************************************
 
 	/**
-	 * Crée un {@code Story} à partir d'un {@code StoryDto}.
+	 * Crée une {@code Story} à partir d'un {@code StoryDto}.
 	 * @param source : un DTO {@code StoryDto}.
 	 * @return l'entité {@code Story} correspondante.
 	 */
 	public Story map(StoryDto source) {
-		
-		Story.StoryBuilder storyBuilder = Story.builder()
+
+    Story target = Story.builder()
 			.title(source.getTitle())
-			.type(EnumStoryType.valueOf(source.getType()))
+			.type(source.getType() != null ? EnumStoryType.valueOf(source.getType()) : EnumStoryType.UNKNOWN)
 			.originalStory(source.isOriginalStory())
-			.status(EnumStoryStatus.valueOf(source.getStatus()))
+			.status(source.getStatus() != null ? EnumStoryStatus.valueOf(source.getStatus()) : null)
 			.summary(source.getSummary())
 			.published(source.isPublished())
-			.chaptersNumber(source.getChaptersNumber())
+			.chaptersNumber(source.getChaptersNumber() != null ? source.getChaptersNumber() : 0)
 			.chapters(source.getChapters() == null ? null : chapterMapper.map(source.getChapters()))
-			.creationDate(DateUtil.toDate(source.getCreationDate()));
-		
-		// date de dernière modification
-		if (source.getLastModificationDate() != null) {
-			storyBuilder.lastModificationDate(DateUtil.toDate(source.getLastModificationDate()));
-		} else {
-			storyBuilder.lastModificationDate(DateUtil.toDate(source.getCreationDate()));
-		}
+      .build();
 
-		Story target = storyBuilder.build();
-		
 		// source.author n'est pas renseigné donc on récupère l'auteur grâce au dao, via son id
-		// on n'a pas besoin d'appeler isPresent() sur l'Optional renvoyé par le dao, car l'id passé fait forcément référence à un auteur existant. 
+		// on n'a pas besoin d'appeler isPresent() sur l'Optional renvoyé par le dao, car l'id passé fait forcément référence à un auteur existant.
 		target.setAuthor(memberDao.findById(source.getAuthorId()).get());
-		
+
 		return target;
-		
+
 	}
 
 	/**
 	 * Crée une {@List<Story>} à partir d'une {@code List<StoryDto>}.
-	 * 
+	 *
 	 * @param source : une {@code List<StoryDto>}.
 	 * @return la {@List<Story>} correspondante.
 	 */

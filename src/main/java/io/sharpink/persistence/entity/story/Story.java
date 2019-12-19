@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,14 +13,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import io.sharpink.persistence.entity.member.Member;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import static javax.persistence.EnumType.STRING;
 
 @Entity
 @Data
@@ -38,18 +36,21 @@ public class Story {
 	private String title;
 
 	@Column(name = "TYPE", columnDefinition = "Genre de l'histoire")
-	@Enumerated(EnumType.STRING)
+	@Enumerated(STRING)
 	private EnumStoryType type;
 
 	@Column(name = "ORIGINAL_STORY", columnDefinition = "true = c'est une histoire originale, false = c'est une fan-fiction")
 	private boolean originalStory;
 
 	@Column(name = "STATUS", columnDefinition = "Statut actuel de l'histoire")
-	@Enumerated(EnumType.STRING)
+	@Enumerated(STRING)
 	private EnumStoryStatus status;
-	
+
 	@Column(name = "SUMMARY", columnDefinition = "Résumé de l'histoire")
 	private String summary;
+
+	@Column(name = "THUMBNAIL", columnDefinition = "Vignette de l'histoire (URL du fichier)")
+	private String thumbnail;
 
 	@Column(name = "PUBLISHED", columnDefinition = "true = l'histoire est publiée et visible par tout le monde, false = seul l'auteur la voit")
 	private boolean published;
@@ -58,6 +59,7 @@ public class Story {
 	private Long chaptersNumber;
 
 	@ManyToOne
+  @ToString.Exclude
 	private Member author;
 
 	@OneToMany(mappedBy = "story")

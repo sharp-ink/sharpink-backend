@@ -7,7 +7,7 @@ package io.sharpink.persistence.entity.story;
  */
 public enum EnumStoryType {
 
-	FANTASY("FANTASY"), SCI_FI("SCI_FI"), BIOGRAPHY("BIOGRAPHY"), ADVENTURE("ADVENTURE"), ROMANCE("ROMANCE");
+	FANTASY("FANTASY"), SCI_FI("SCI_FI"), BIOGRAPHY("BIOGRAPHY"), ADVENTURE("ADVENTURE"), ROMANCE("ROMANCE"), UNKNOWN("UNKNOWN");
 
 	private String value;
 
