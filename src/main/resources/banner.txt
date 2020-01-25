@@ -1,0 +1,30 @@
+${AnsiColor.BRIGHT_BLUE}          _____
+${AnsiColor.BRIGHT_BLUE}         /\    \
+${AnsiColor.BRIGHT_BLUE}        /::\    \
+${AnsiColor.BRIGHT_BLUE}       /::::\    \
+${AnsiColor.BRIGHT_BLUE}      /::::::\    \
+${AnsiColor.BRIGHT_BLUE}     /:::/\:::\    \
+${AnsiColor.BRIGHT_BLUE}    /:::/__\:::\    \
+${AnsiColor.BRIGHT_BLUE}    \:::\   \:::\    \
+${AnsiColor.BRIGHT_BLUE}  ___\:::\   \:::\    \
+${AnsiColor.BRIGHT_BLUE} /\   \:::\   \:::\    \
+${AnsiColor.BRIGHT_BLUE}/::\   \:::\   \:::\____\
+${AnsiColor.BRIGHT_BLUE}\:::\   \:::\   \::/    /
+${AnsiColor.BRIGHT_BLUE} \:::\   \:::\   \/____/
+${AnsiColor.BRIGHT_BLUE}  \:::\   \:::\    \
+${AnsiColor.BRIGHT_BLUE}   \:::\   \:::\____\
+${AnsiColor.BRIGHT_BLUE}    \:::\  /:::/    /
+${AnsiColor.BRIGHT_BLUE}     \:::\/:::/    /
+${AnsiColor.BRIGHT_BLUE}      \::::::/    /
+${AnsiColor.BRIGHT_BLUE}       \::::/    /
+${AnsiColor.BRIGHT_BLUE}        \::/    /
+${AnsiColor.BRIGHT_BLUE}         \/____/
+${AnsiColor.BRIGHT_BLUE}                    _                                                   _
+${AnsiColor.BRIGHT_BLUE}                   | |                                    o            | |
+${AnsiColor.BRIGHT_BLUE}                   | |      __,    ,_       _                  _  _    | |
+${AnsiColor.BRIGHT_BLUE}                   |/ \    /  |   /  |    |/ \_   -----   |   / |/ |   |/_)
+${AnsiColor.BRIGHT_BLUE}                   |   |_/ \_/|_/    |_/  |__/            |_/   |  |_/ | \_/
+${AnsiColor.BRIGHT_BLUE}                                         /|
+${AnsiColor.BRIGHT_BLUE}                                         \|
+${AnsiColor.BRIGHT_BLUE}
+${AnsiColor.DEFAULT}
