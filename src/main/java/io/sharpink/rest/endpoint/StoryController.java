@@ -37,7 +37,6 @@ public class StoryController {
 	 */
 	@GetMapping("")
 	public List<StoryDto> getStories() {
-	  System.out.println("GET /stories");
 		return storyService.getAllStories();
 	}
 
@@ -46,7 +45,6 @@ public class StoryController {
 	 */
 	@GetMapping("/{id}")
 	public StoryDto getStory(@PathVariable Long id) {
-	  System.out.println("GET /stories/" + id);
 		Optional<StoryDto> optionalStoryDto = storyService.getStory(id);
 		if (optionalStoryDto.isPresent()) {
 			return optionalStoryDto.get();
@@ -61,7 +59,6 @@ public class StoryController {
 	 */
 	@PostMapping("")
 	public ResponseEntity<?> createStory(@RequestBody @Valid StoryDto storyDto) {
-		System.out.println("POST /stories - storyDto = " + storyDto);
 		try {
 		  Long storyId = storyService.createStory(storyDto);
       return new ResponseEntity<>(storyId, CREATED);
@@ -72,7 +69,6 @@ public class StoryController {
 
 	@PatchMapping("/{id}")
   public ResponseEntity<?> updateStory(@PathVariable Long id, @RequestBody @Valid StoryPatchDto storyPatchDto) {
-	  System.out.println("PATCH /stories/" + id + " - storyPatchDto = " + storyPatchDto);
 	  try {
 	    StoryDto storyDto = storyService.updateStory(id, storyPatchDto);
       return new ResponseEntity<>(storyDto, OK);

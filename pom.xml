@@ -20,7 +20,6 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<!-- Versions des dépendances -->
-		<swagger.version>2.9.2</swagger.version>
 		<io.scaunois.common.version>1.0.1-SNAPSHOT</io.scaunois.common.version>
 	</properties>
 
@@ -41,24 +40,20 @@
 			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 
-		<!-- Swagger -->
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
-
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-		
+
+    <!-- Apache commons -->
+    <!-- TODO : à déplacer dans io.scaunois -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.9</version>
+    </dependency>
+
 		<!-- Utilitaire common -->
 		<dependency>
 			<groupId>io.scaunois</groupId>
