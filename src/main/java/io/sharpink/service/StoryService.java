@@ -22,6 +22,7 @@ import java.util.Optional;
 import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_PATH;
 import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_WEB_URL;
 import static io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum.TITLE_ALREADY_USED;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class StoryService {
@@ -40,14 +41,17 @@ public class StoryService {
   }
 
   /**
-   * Récupère toutes les histoires présentes en base.
+   * Récupère toutes les histoires avec au moins un chapitre présentes en base.
    *
    * @return Une {@code List<StoryDto>} représentant la liste des histoires, vide
    * s'il n'y aucune histoire.
    */
   public List<StoryDto> getAllStories() {
 
-    List<Story> stories = (List<Story>) storyDao.findAll();
+    List<Story> stories = ((List<Story>) storyDao.findAll())
+      .stream()
+       .filter(story -> story.getChaptersNumber() != 0) // keep stories having at least 1 chapter
+      .collect(toList());
 
     // on n'a pas besoin de charger les chapitres
     boolean shouldLoadChapters = false;
