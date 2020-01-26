@@ -46,11 +46,12 @@ public class StoryService {
    * @return Une {@code List<StoryDto>} représentant la liste des histoires, vide
    * s'il n'y aucune histoire.
    */
-  public List<StoryDto> getAllStories() {
+  public List<StoryDto> getAllStories(Boolean published) {
 
     List<Story> stories = ((List<Story>) storyDao.findAll())
       .stream()
-       .filter(story -> story.getChaptersNumber() != 0) // keep stories having at least 1 chapter
+      .filter(story -> story.getChaptersNumber() != 0) // keep stories having at least 1 chapter
+      .filter(story -> story.isPublished() == published.booleanValue() || published == null) // keep only if given published status (or no published status specified)
       .collect(toList());
 
     // on n'a pas besoin de charger les chapitres

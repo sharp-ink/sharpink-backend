@@ -36,8 +36,8 @@ public class StoryController {
 	 * Renvoie toutes les {@code Story}.
 	 */
 	@GetMapping("")
-	public List<StoryDto> getStories() {
-		return storyService.getAllStories();
+	public List<StoryDto> getStories(@RequestParam Boolean published) {
+		return storyService.getAllStories(published);
 	}
 
 	/**
