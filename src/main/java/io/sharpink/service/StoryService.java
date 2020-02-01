@@ -1,6 +1,6 @@
 package io.sharpink.service;
 
-import io.scaunois.date.DateUtil;
+import io.scaunois.common.util.date.DateUtil;
 import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.persistence.dao.StoryDao;
 import io.sharpink.persistence.entity.story.Story;
