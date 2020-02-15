@@ -10,4 +10,5 @@ public class StoryPatchDto {
   private EnumStoryType type;
   private String summary;
   private String thumbnail;
+  private Boolean published;
 }

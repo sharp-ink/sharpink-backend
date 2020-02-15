@@ -58,7 +58,20 @@ public class StoryService {
     boolean shouldLoadChapters = false;
 
     return storyMapper.mapDtos(stories, shouldLoadChapters);
+  }
 
+  /**
+   * Get stories for a specific {@code Member}
+   *
+   * @return A {@code List<StoryDto>} containing all stories of the given {@code Member}, empty list if this user has no stories.
+   */
+  public List<StoryDto> getStories(Long memberId) {
+    List<Story> stories = storyDao.findByAuthorId(memberId);
+
+    // on n'a pas besoin de charger les chapitres
+    boolean shouldLoadChapters = false;
+
+    return storyMapper.mapDtos(stories, shouldLoadChapters);
   }
 
   /**
@@ -106,7 +119,7 @@ public class StoryService {
   /**
    * Met à jour une histoire.
    *
-   * @param id L'id de l'histoire à mettre à jour.
+   * @param id            L'id de l'histoire à mettre à jour.
    * @param storyPatchDto Les nouvelles informations (partielles) à ajouter à l'histoire.
    */
   public StoryDto updateStory(Long id, StoryPatchDto storyPatchDto) {
@@ -134,6 +147,10 @@ public class StoryService {
           e.printStackTrace(); // TODO: use a logger instead
           throw new InternalError500Exception(e);
         }
+      }
+
+      if (storyPatchDto.getPublished() != null) {
+        story.setPublished(storyPatchDto.getPublished());
       }
 
       Story updatedStory = storyDao.save(story);

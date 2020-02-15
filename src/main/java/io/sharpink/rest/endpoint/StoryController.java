@@ -78,5 +78,4 @@ public class StoryController {
 	    return new ResponseEntity<>(new CustomApiError(), INTERNAL_SERVER_ERROR);
     }
   }
-
 }

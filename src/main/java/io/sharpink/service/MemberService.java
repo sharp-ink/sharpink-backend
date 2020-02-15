@@ -4,6 +4,7 @@ import io.sharpink.mapper.member.MemberMapper;
 import io.sharpink.persistence.dao.MemberDao;
 import io.sharpink.persistence.entity.member.Member;
 import io.sharpink.persistence.entity.member.MemberDetails;
+import io.sharpink.rest.dto.story.StoryDto;
 import io.sharpink.rest.exception.InternalError500Exception;
 import io.sharpink.util.picture.PictureUtil;
 import io.sharpink.rest.dto.member.MemberDto;
@@ -14,9 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,21 +26,21 @@ public class MemberService {
 
 	private MemberDao memberDao;
 	private MemberMapper memberMapper;
+	private StoryService storyService;
 	private PictureManagementService pictureManagementService;
 
 	@Autowired
-	public MemberService(MemberDao memberDao, MemberMapper memberMapper, PictureManagementService pictureManagementService) {
+	public MemberService(MemberDao memberDao, MemberMapper memberMapper, StoryService storyService, PictureManagementService pictureManagementService) {
 		this.memberDao = memberDao;
 		this.memberMapper = memberMapper;
+		this.storyService = storyService;
 		this.pictureManagementService = pictureManagementService;
 	}
 
 	public List<MemberDto> getAllMembers() {
-
 		List<Member> members = (List<Member>) memberDao.findAll();
 		boolean shouldLoadStories = false;
 		return memberMapper.map(members, shouldLoadStories);
-
 	}
 
 	public Optional<MemberDto> getMember(Long id) {
@@ -56,6 +54,10 @@ public class MemberService {
 			return Optional.empty();
 		}
 
+	}
+
+  public List<StoryDto> getStories(Long memberId) {
+	  return storyService.getStories(memberId);
 	}
 
   public MemberDto updateMemberProfile(Long id, MemberProfileDto memberProfileDto) {
