@@ -3,11 +3,14 @@ package io.sharpink.service;
 import io.scaunois.common.util.date.DateUtil;
 import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.persistence.dao.StoryDao;
+import io.sharpink.persistence.entity.story.Chapter;
+import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.Story;
+import io.sharpink.rest.dto.request.story.StoryRequest;
+import io.sharpink.rest.dto.response.story.StoryResponse;
 import io.sharpink.rest.exception.InternalError500Exception;
 import io.sharpink.util.picture.PictureUtil;
-import io.sharpink.rest.dto.story.StoryDto;
-import io.sharpink.rest.dto.story.StoryPatchDto;
+import io.sharpink.rest.dto.request.story.StoryPatchRequest;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.rest.exception.UnprocessableEntity422Exception;
 import io.sharpink.service.picture.PictureManagementService;
@@ -28,9 +31,7 @@ import static java.util.stream.Collectors.toList;
 public class StoryService {
 
   private StoryDao storyDao;
-
   private StoryMapper storyMapper;
-
   private PictureManagementService pictureManagementService;
 
   @Autowired
@@ -46,7 +47,7 @@ public class StoryService {
    * @return Une {@code List<StoryDto>} représentant la liste des histoires, vide
    * s'il n'y aucune histoire.
    */
-  public List<StoryDto> getAllStories(Boolean published) {
+  public List<StoryResponse> getAllStories(Boolean published) {
 
     List<Story> stories = ((List<Story>) storyDao.findAll())
       .stream()
@@ -54,10 +55,7 @@ public class StoryService {
       .filter(story -> story.isPublished() == published.booleanValue() || published == null) // keep only if given published status (or no published status specified)
       .collect(toList());
 
-    // on n'a pas besoin de charger les chapitres
-    boolean shouldLoadChapters = false;
-
-    return storyMapper.mapDtos(stories, shouldLoadChapters);
+    return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.DISABLED); // chapters are not necessary
   }
 
   /**
@@ -65,13 +63,10 @@ public class StoryService {
    *
    * @return A {@code List<StoryDto>} containing all stories of the given {@code Member}, empty list if this user has no stories.
    */
-  public List<StoryDto> getStories(Long memberId) {
+  public List<StoryResponse> getStories(Long memberId) {
     List<Story> stories = storyDao.findByAuthorId(memberId);
 
-    // on n'a pas besoin de charger les chapitres
-    boolean shouldLoadChapters = false;
-
-    return storyMapper.mapDtos(stories, shouldLoadChapters);
+    return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.DISABLED); // chapters are not necessary
   }
 
   /**
@@ -81,14 +76,12 @@ public class StoryService {
    * @return La {@code Story} correspondant à l'id passé en paramètre si elle
    * existe, null sinon.
    */
-  public Optional<StoryDto> getStory(Long id) {
+  public Optional<StoryResponse> getStory(Long id) {
 
     Optional<Story> storyOptional = storyDao.findById(id);
 
     if (storyOptional.isPresent()) {
-      // on souhaite charger les chapitres
-      boolean shouldLoadChapters = true;
-      return Optional.of(storyMapper.mapDto(storyOptional.get(), shouldLoadChapters));
+      return Optional.of(storyMapper.toStoryResponse(storyOptional.get(), ChaptersLoadingStrategy.ENABLED)); // chapters are requested
     } else {
       return Optional.empty();
     }
@@ -98,21 +91,20 @@ public class StoryService {
   /**
    * Crée et sauvegarde une histoire en base.
    *
-   * @param storyDto Un objet contenant les informations de l'histoire à créer et
+   * @param storyRequest Un objet contenant les informations de l'histoire à créer et
    *                 sauvegarder.
    * @return L'id de l'entité persistée, qui servira à identifier l'histoire de
    * manière unique.
    */
-  public Long createStory(StoryDto storyDto) {
-    if (storyWithSameTitleAlreadyExists(storyDto.getTitle())) {
+  public Long createStory(StoryRequest storyRequest) {
+    if (storyWithSameTitleAlreadyExists(storyRequest.getTitle())) {
       throw new UnprocessableEntity422Exception(TITLE_ALREADY_USED);
     } else {
-      Story story = storyMapper.map(storyDto);
+      Story story = storyMapper.toStory(storyRequest);
       story.setCreationDate(DateUtil.toDate(LocalDateTime.now()));
       story.setLastModificationDate(story.getCreationDate());
       story = storyDao.save(story);
-      // renvoie l'id généré lors de la persistance de l'entité
-      return story.getId();
+      return story.getId(); // returns id of newly created entity
     }
   }
 
@@ -120,23 +112,23 @@ public class StoryService {
    * Met à jour une histoire.
    *
    * @param id            L'id de l'histoire à mettre à jour.
-   * @param storyPatchDto Les nouvelles informations (partielles) à ajouter à l'histoire.
+   * @param storyPatchRequest Les nouvelles informations (partielles) à ajouter à l'histoire.
    */
-  public StoryDto updateStory(Long id, StoryPatchDto storyPatchDto) {
+  public StoryResponse updateStory(Long id, StoryPatchRequest storyPatchRequest) {
     Optional<Story> storyOptional = storyDao.findById(id);
     if (storyOptional.isPresent()) {
       Story story = storyOptional.get();
 
-      if (storyPatchDto.getType() != null) {
-        story.setType(storyPatchDto.getType());
+      if (storyPatchRequest.getType() != null) {
+        story.setType(storyPatchRequest.getType());
       }
 
-      if (storyPatchDto.getSummary() != null) {
-        story.setSummary(storyPatchDto.getSummary());
+      if (storyPatchRequest.getSummary() != null) {
+        story.setSummary(storyPatchRequest.getSummary());
       }
 
-      if (storyPatchDto.getThumbnail() != null) {
-        String formImageData = storyPatchDto.getThumbnail();
+      if (storyPatchRequest.getThumbnail() != null) {
+        String formImageData = storyPatchRequest.getThumbnail();
         String extension = PictureUtil.extractExtension(formImageData);
         String storyThumbnailWebUrl = USERS_PROFILE_PICTURES_WEB_URL + '/' + story.getAuthor().getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
         story.setThumbnail(storyThumbnailWebUrl);
@@ -149,12 +141,12 @@ public class StoryService {
         }
       }
 
-      if (storyPatchDto.getPublished() != null) {
-        story.setPublished(storyPatchDto.getPublished());
+      if (storyPatchRequest.getPublished() != null) {
+        story.setPublished(storyPatchRequest.getPublished());
       }
 
       Story updatedStory = storyDao.save(story);
-      return storyMapper.mapDto(updatedStory, false);
+      return storyMapper.toStoryResponse(updatedStory, ChaptersLoadingStrategy.DISABLED);
     } else {
       throw new NotFound404Exception();
     }

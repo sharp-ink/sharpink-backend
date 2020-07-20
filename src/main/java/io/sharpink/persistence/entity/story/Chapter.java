@@ -39,5 +39,4 @@ public class Chapter implements Comparable<Chapter> {
 	public int compareTo(Chapter o) {
 		return ((Integer) position).compareTo(o.position);
 	}
-
 }

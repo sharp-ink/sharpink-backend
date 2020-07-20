@@ -5,18 +5,22 @@ package io.sharpink.persistence.entity.story;
  * biographie,...)
  *
  */
-public enum EnumStoryType {
+public enum StoryType {
 
-	FANTASY("FANTASY"), SCI_FI("SCI_FI"), BIOGRAPHY("BIOGRAPHY"), ADVENTURE("ADVENTURE"), ROMANCE("ROMANCE"), UNKNOWN("UNKNOWN");
+	FANTASY("FANTASY"),
+  SCI_FI("SCI_FI"),
+  BIOGRAPHY("BIOGRAPHY"),
+  ADVENTURE("ADVENTURE"),
+  ROMANCE("ROMANCE"),
+  UNKNOWN("UNKNOWN");
 
 	private String value;
 
-	EnumStoryType(String value) {
+	StoryType(String value) {
 		this.value = value;
 	}
 
 	public String getValue() {
 		return value;
 	}
-
 }

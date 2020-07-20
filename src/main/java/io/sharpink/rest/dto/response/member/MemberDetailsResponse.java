@@ -1,4 +1,4 @@
-package io.sharpink.rest.dto.member;
+package io.sharpink.rest.dto.response.member;
 
 import java.time.LocalDate;
 
@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class MemberDetailsDto {
+public class MemberDetailsResponse {
 
 	protected String firstName;
 	protected String lastName;

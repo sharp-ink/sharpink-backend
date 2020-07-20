@@ -35,24 +35,24 @@ public class Story {
 	@Column(name = "TITLE", columnDefinition = "Titre de l'histoire")
 	private String title;
 
-	@Column(name = "TYPE", columnDefinition = "Genre de l'histoire")
+	@Column(columnDefinition = "Genre de l'histoire")
 	@Enumerated(STRING)
-	private EnumStoryType type;
+	private StoryType type;
 
 	@Column(name = "ORIGINAL_STORY", columnDefinition = "true = c'est une histoire originale, false = c'est une fan-fiction")
 	private boolean originalStory;
 
-	@Column(name = "STATUS", columnDefinition = "Statut actuel de l'histoire")
+	@Column(columnDefinition = "Statut actuel de l'histoire")
 	@Enumerated(STRING)
-	private EnumStoryStatus status;
+	private StoryStatus status;
 
-	@Column(name = "SUMMARY", columnDefinition = "Résumé de l'histoire")
+	@Column(columnDefinition = "Résumé de l'histoire")
 	private String summary;
 
-	@Column(name = "THUMBNAIL", columnDefinition = "Vignette de l'histoire (URL du fichier)")
+	@Column(columnDefinition = "Vignette de l'histoire (URL du fichier)")
 	private String thumbnail;
 
-	@Column(name = "PUBLISHED", columnDefinition = "true = l'histoire est publiée et visible par tout le monde, false = seul l'auteur la voit")
+	@Column(columnDefinition = "true = l'histoire est publiée et visible par tout le monde, false = seul l'auteur la voit")
 	private boolean published;
 
 	@Column(name = "CHAPTERS_NUMBER", columnDefinition = "Nombre de chapitres de l'histoire")

@@ -5,7 +5,7 @@ package io.sharpink.persistence.entity.story;
  * (terminée, en cours, en stand-by)
  *
  */
-public enum EnumStoryStatus {
+public enum StoryStatus {
 
 	COMPLETE("COMPLETE"), // histoire terminée
 	PROGRESS("PROGRESS"), // en cours d'écriture
@@ -13,7 +13,7 @@ public enum EnumStoryStatus {
 
 	private String value;
 
-	EnumStoryStatus(String value) {
+	StoryStatus(String value) {
 		this.value = value;
 	}
 

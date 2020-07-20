@@ -25,13 +25,10 @@ public class Member {
 
 	// Informations principales, obligatoires
 
-	@Column(name = "NICKNAME")
 	protected String nickname;
 
-	@Column(name = "EMAIL")
 	protected String email;
 
-	@Column(name = "PASSWORD")
 	protected String password;
 
 	// Informations complémentaires, optionnelles. Suppression du getter généré par
