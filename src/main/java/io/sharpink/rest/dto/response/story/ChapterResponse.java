@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChapterResponse implements Comparable<ChapterResponse> {
 
-	private Integer id;
+	private Long id;
 	private Integer position;
 	private String title;
 	private String content;

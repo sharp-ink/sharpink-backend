@@ -13,16 +13,6 @@ import org.springframework.stereotype.Component;
 import io.sharpink.mapper.member.MemberMapper;
 import io.sharpink.persistence.dao.MemberDao;
 
-/**
- * Classe permettant de transformer :
- * <ul>
- * <li>des {@code Story} en {@code StoryDto}</li>
- * <li>des {@code StoryDto} en {@code Story}</li>
- * </ul>
- *
- * @author scaunois
- *
- */
 // @formatter:off
 @Component
 public class StoryMapper {
@@ -56,7 +46,7 @@ public class StoryMapper {
 			.build();
 
 		if (chaptersLoadingStrategy == ChaptersLoadingStrategy.ENABLED) {
-			target.setChapters(chapterMapper.mapDtos(source.getChapters()));
+			target.setChapters(chapterMapper.toChapterResponseList(source.getChapters()));
 		}
 
 		return target;

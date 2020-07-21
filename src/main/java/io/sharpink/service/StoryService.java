@@ -1,12 +1,16 @@
 package io.sharpink.service;
 
 import io.scaunois.common.util.date.DateUtil;
+import io.sharpink.mapper.story.ChapterMapper;
 import io.sharpink.mapper.story.StoryMapper;
+import io.sharpink.persistence.dao.ChapterDao;
 import io.sharpink.persistence.dao.StoryDao;
 import io.sharpink.persistence.entity.story.Chapter;
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.Story;
+import io.sharpink.rest.dto.request.story.ChapterRequest;
 import io.sharpink.rest.dto.request.story.StoryRequest;
+import io.sharpink.rest.dto.response.story.ChapterResponse;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import io.sharpink.rest.exception.InternalError500Exception;
 import io.sharpink.util.picture.PictureUtil;
@@ -31,13 +35,17 @@ import static java.util.stream.Collectors.toList;
 public class StoryService {
 
   private StoryDao storyDao;
+  private ChapterDao chapterDao;
   private StoryMapper storyMapper;
+  ChapterMapper chapterMapper;
   private PictureManagementService pictureManagementService;
 
   @Autowired
-  public StoryService(StoryDao storyDao, StoryMapper storyMapper, PictureManagementService pictureManagementService) {
+  public StoryService(StoryDao storyDao, ChapterDao chapterDao, StoryMapper storyMapper, ChapterMapper chapterMapper, PictureManagementService pictureManagementService) {
     this.storyDao = storyDao;
+    this.chapterDao = chapterDao;
     this.storyMapper = storyMapper;
+    this.chapterMapper = chapterMapper;
     this.pictureManagementService = pictureManagementService;
   }
 
@@ -72,7 +80,6 @@ public class StoryService {
   /**
    * Récupère une histoire via son id.
    *
-   * @param id L'id de l'histoire à récupérer.
    * @return La {@code Story} correspondant à l'id passé en paramètre si elle
    * existe, null sinon.
    */
@@ -147,6 +154,55 @@ public class StoryService {
 
       Story updatedStory = storyDao.save(story);
       return storyMapper.toStoryResponse(updatedStory, ChaptersLoadingStrategy.DISABLED);
+    } else {
+      throw new NotFound404Exception();
+    }
+  }
+
+  /**
+   * Creates and persists a new chapter for a given story
+   *
+   * @param chapterRequest an object with the informations of the chapter to be created
+   * @return the id of the newly created chapter (unique)
+   */
+  public Long addChapter(Long storyId, ChapterRequest chapterRequest) {
+    Optional<Story> storyOptional = storyDao.findById(storyId);
+    if (storyOptional.isPresent()) {
+      Story story = storyOptional.get();
+
+      Chapter newChapter = chapterMapper.toChapter(chapterRequest);
+      newChapter.setPosition(story.getChaptersNumber() + 1);
+      newChapter.setStory(story);
+      chapterDao.save(newChapter);
+
+      story.getChapters().add(newChapter);
+      story.setChaptersNumber(story.getChaptersNumber() + 1);
+      storyDao.save(story);
+
+      return newChapter.getId();
+    } else {
+      throw new NotFound404Exception();
+    }
+  }
+
+  /**
+   * Updates an existing chapter
+   */
+  public ChapterResponse updateChapter(Long storyId, int chapterPosition, ChapterRequest chapterRequest) {
+    Optional<Story> storyOptional = storyDao.findById(storyId);
+    if (storyOptional.isPresent()) {
+      Story story = storyOptional.get();
+
+      try {
+        Chapter chapter = story.getChapters().get(chapterPosition - 1);
+        chapter.setTitle(chapterRequest.getTitle());
+        chapter.setContent(chapterRequest.getContent());
+
+        Chapter updatedChapter = chapterDao.save(chapter);
+        return chapterMapper.toChapterResponse(updatedChapter);
+      } catch (IndexOutOfBoundsException e) {
+        throw new NotFound404Exception();
+      }
     } else {
       throw new NotFound404Exception();
     }

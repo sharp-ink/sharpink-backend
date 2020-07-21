@@ -3,6 +3,7 @@ package io.sharpink.mapper.story;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.sharpink.rest.dto.request.story.ChapterRequest;
 import org.springframework.stereotype.Component;
 
 import io.sharpink.persistence.entity.story.Chapter;
@@ -21,18 +22,7 @@ import io.sharpink.rest.dto.response.story.ChapterResponse;
 @Component
 public class ChapterMapper {
 
-	// **************************************************************
-	// Chapter --> ChapterDto
-	// **************************************************************
-
-	/**
-	 * Crée un {@code ChapterDto} à partir d'un {@code Chapter}.
-	 *
-	 * @param source : une entité {@code Chapter}.
-	 * @return le bean {@code ChapterDto} correspondant.
-	 */
-	public ChapterResponse mapDto(Chapter source) {
-
+	public ChapterResponse toChapterResponse(Chapter source) {
 		ChapterResponse target = new ChapterResponse();
 
 		target.setId(source.getId());
@@ -41,66 +31,35 @@ public class ChapterMapper {
 		target.setContent(source.getContent());
 
 		return target;
-
 	}
 
-	/**
-	 * Crée une {@List<ChapterDto>} à partir d'une {@code List<Chapter>}.
-	 *
-	 * @param source : une {@code List<Chapter>}.
-	 * @return la {@List<ChapterDto>} correspondante.
-	 */
-	public List<ChapterResponse> mapDtos(List<Chapter> source) {
-
+	public List<ChapterResponse> toChapterResponseList(List<Chapter> source) {
 		List<ChapterResponse> target = new ArrayList<>();
 
 		for (Chapter chapter : source) {
-			target.add(mapDto(chapter));
+			target.add(toChapterResponse(chapter));
 		}
 
 		return target;
-
 	}
 
-	// **************************************************************
-	// ChapterDto --> Chapter
-	// **************************************************************
-
-	/**
-	 * Crée un {@code Chapter} à partir d'un {@code ChapterDto}.
-	 *
-	 * @param source : un DTO {@code ChapterDto}.
-	 * @return l'entité {@code Chapter} correspondante.
-	 */
-	public Chapter map(ChapterResponse source) {
-
+	public Chapter toChapter(ChapterRequest source) {
 		Chapter target = new Chapter();
 
-		target.setId(source.getId());
-		target.setPosition(source.getPosition());
 		target.setTitle(source.getTitle());
 		target.setContent(source.getContent());
 
 		return target;
-
 	}
 
-	/**
-	 * Crée une {@List<Chapter>} à partir d'une {@code List<ChapterDto>}.
-	 *
-	 * @param source : une {@code List<ChapterDto>}.
-	 * @return la {@List<Chapter>} correspondante.
-	 */
-	public List<Chapter> map(List<ChapterResponse> source) {
-
+	public List<Chapter> toChapterList(List<ChapterRequest> source) {
 		List<Chapter> target = new ArrayList<>();
 
-		for (ChapterResponse chapterResponse : source) {
-			target.add(map(chapterResponse));
+		for (ChapterRequest chapterRequest : source) {
+			target.add(toChapter(chapterRequest));
 		}
 
 		return target;
-
 	}
 
 }

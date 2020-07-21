@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class StoryRequest {
-
   private String title;
   private String type;
   private boolean originalStory;
@@ -20,7 +19,7 @@ public class StoryRequest {
   private String summary;
   private boolean published;
   private Long authorId;
-  private Long chaptersNumber;
+  private Integer chaptersNumber;
   @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
   private LocalDateTime creationDate;
   @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")

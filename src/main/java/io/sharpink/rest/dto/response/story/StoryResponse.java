@@ -24,7 +24,7 @@ public class StoryResponse {
   private String summary;
   private boolean published;
   private Long authorId;
-  private Long chaptersNumber;
+  private Integer chaptersNumber;
   private MemberResponse author; // peut être null
   private List<ChapterResponse> chapters; // peut être null
 

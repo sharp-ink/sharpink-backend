@@ -56,7 +56,7 @@ public class Story {
 	private boolean published;
 
 	@Column(name = "CHAPTERS_NUMBER", columnDefinition = "Nombre de chapitres de l'histoire")
-	private Long chaptersNumber;
+	private Integer chaptersNumber;
 
 	@ManyToOne
   @ToString.Exclude

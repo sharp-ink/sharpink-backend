@@ -20,14 +20,14 @@ public class Chapter implements Comparable<Chapter> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Long id;
 
 	@ManyToOne
   @ToString.Exclude
 	private Story story;
 
 	@Column(name = "POSITION", columnDefinition = "Numéro du chapitre (commence à 1)")
-	private int position;
+	private Integer position;
 
 	@Column(name = "TITLE", columnDefinition = "Titre du chapitre (optionnel)")
 	private String title;
@@ -37,6 +37,6 @@ public class Chapter implements Comparable<Chapter> {
 
 	@Override
 	public int compareTo(Chapter o) {
-		return ((Integer) position).compareTo(o.position);
+		return position.compareTo(o.position);
 	}
 }
