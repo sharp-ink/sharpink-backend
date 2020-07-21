@@ -159,6 +159,10 @@ public class StoryService {
     }
   }
 
+  public void removeStory(Long id) {
+    storyDao.deleteById(id);
+  }
+
   /**
    * Creates and persists a new chapter for a given story
    *
