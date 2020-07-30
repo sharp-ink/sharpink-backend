@@ -55,8 +55,7 @@ public class MemberDetails {
 	protected boolean emailPublished;
 
 	@Column(name = "CUSTOM_MESSAGE")
-	protected String
-    customMessage;
+	protected String customMessage;
 
 	@Column(name = "BIOGRAPHY")
 	protected String biography;

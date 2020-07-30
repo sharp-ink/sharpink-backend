@@ -18,6 +18,8 @@ import io.sharpink.rest.dto.request.story.StoryPatchRequest;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.rest.exception.UnprocessableEntity422Exception;
 import io.sharpink.service.picture.PictureManagementService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +65,7 @@ public class StoryService {
       .filter(story -> story.isPublished() == published.booleanValue() || published == null) // keep only if given published status (or no published status specified)
       .collect(toList());
 
-    return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.DISABLED); // chapters are not necessary
+    return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.ONLY_FIRST); // load only the first chapter (useful for preview)
   }
 
   /**
@@ -74,7 +76,7 @@ public class StoryService {
   public List<StoryResponse> getStories(Long memberId) {
     List<Story> stories = storyDao.findByAuthorId(memberId);
 
-    return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.DISABLED); // chapters are not necessary
+    return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.NONE); // chapters are not necessary
   }
 
   /**
@@ -88,7 +90,7 @@ public class StoryService {
     Optional<Story> storyOptional = storyDao.findById(id);
 
     if (storyOptional.isPresent()) {
-      return Optional.of(storyMapper.toStoryResponse(storyOptional.get(), ChaptersLoadingStrategy.ENABLED)); // chapters are requested
+      return Optional.of(storyMapper.toStoryResponse(storyOptional.get(), ChaptersLoadingStrategy.ALL)); // all chapters are requested
     } else {
       return Optional.empty();
     }
@@ -126,6 +128,12 @@ public class StoryService {
     if (storyOptional.isPresent()) {
       Story story = storyOptional.get();
 
+      if (StringUtils.isNotEmpty(storyPatchRequest.getTitle())) {
+        story.setTitle(storyPatchRequest.getTitle());
+      }
+
+      story.setOriginalStory(storyPatchRequest.isOriginalStory()); // will not very likely change but it is allowed
+
       if (storyPatchRequest.getType() != null) {
         story.setType(storyPatchRequest.getType());
       }
@@ -134,7 +142,7 @@ public class StoryService {
         story.setSummary(storyPatchRequest.getSummary());
       }
 
-      if (storyPatchRequest.getThumbnail() != null) {
+      if (StringUtils.isNotEmpty(storyPatchRequest.getThumbnail())) {
         String formImageData = storyPatchRequest.getThumbnail();
         String extension = PictureUtil.extractExtension(formImageData);
         String storyThumbnailWebUrl = USERS_PROFILE_PICTURES_WEB_URL + '/' + story.getAuthor().getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
@@ -153,7 +161,7 @@ public class StoryService {
       }
 
       Story updatedStory = storyDao.save(story);
-      return storyMapper.toStoryResponse(updatedStory, ChaptersLoadingStrategy.DISABLED);
+      return storyMapper.toStoryResponse(updatedStory, ChaptersLoadingStrategy.NONE);
     } else {
       throw new NotFound404Exception();
     }

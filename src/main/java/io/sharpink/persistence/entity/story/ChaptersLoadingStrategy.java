@@ -1,5 +1,5 @@
 package io.sharpink.persistence.entity.story;
 
 public enum ChaptersLoadingStrategy {
-  ENABLED, DISABLED
+  NONE, ONLY_FIRST, ALL
 }

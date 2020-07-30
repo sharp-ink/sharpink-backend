@@ -22,6 +22,7 @@ public class StoryResponse {
   private boolean originalStory;
   private String status;
   private String summary;
+  private String thumbnail;
   private boolean published;
   private Long authorId;
   private Integer chaptersNumber;

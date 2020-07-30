@@ -12,7 +12,7 @@ public enum StoryType {
   BIOGRAPHY("BIOGRAPHY"),
   ADVENTURE("ADVENTURE"),
   ROMANCE("ROMANCE"),
-  UNKNOWN("UNKNOWN");
+  UNDETERMINED("UNDETERMINED");
 
 	private String value;
 

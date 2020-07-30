@@ -52,7 +52,7 @@ public class MemberMapper {
     // on ne charge les histoires que si demandé
     if (storiesLoadingStrategy == StoriesLoadingStrategy.ENABLED) {
       // meme si on veut les histoires, on ne veut pas charger les chapitres
-      target.setStories(storyMapper.toStoryResponseList(source.getStories(), ChaptersLoadingStrategy.DISABLED));
+      target.setStories(storyMapper.toStoryResponseList(source.getStories(), ChaptersLoadingStrategy.NONE));
     }
 
     return target;

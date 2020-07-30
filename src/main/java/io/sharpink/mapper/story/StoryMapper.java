@@ -33,8 +33,9 @@ public class StoryMapper {
 			.id(source.getId())
 			.title(source.getTitle())
 			.type(source.getType().getValue())
-			.summary(source.getSummary())
 			.status(source.getStatus().getValue())
+			.summary(source.getSummary())
+      .thumbnail(source.getThumbnail())
 			.published(source.isPublished())
 			.chaptersNumber(source.getChaptersNumber())
 			.originalStory(source.isOriginalStory())
@@ -45,9 +46,11 @@ public class StoryMapper {
 			.finalReleaseDate(DateUtil.toLocalDateTime(source.getFinalReleaseDate()))
 			.build();
 
-		if (chaptersLoadingStrategy == ChaptersLoadingStrategy.ENABLED) {
+		if (chaptersLoadingStrategy == ChaptersLoadingStrategy.ALL) {
 			target.setChapters(chapterMapper.toChapterResponseList(source.getChapters()));
-		}
+		} else if (chaptersLoadingStrategy == ChaptersLoadingStrategy.ONLY_FIRST) {
+		  target.setChapters(chapterMapper.toChapterResponseList(source.getChapters().subList(0, 1)));
+    }
 
 		return target;
 	}
@@ -65,7 +68,7 @@ public class StoryMapper {
 	public Story toStory(StoryRequest source) {
     Story target = Story.builder()
 			.title(source.getTitle())
-			.type(source.getType() != null ? StoryType.valueOf(source.getType()) : StoryType.UNKNOWN)
+			.type(source.getType() != null ? StoryType.valueOf(source.getType()) : StoryType.UNDETERMINED)
 			.originalStory(source.isOriginalStory())
 			.status(source.getStatus() != null ? StoryStatus.valueOf(source.getStatus()) : null)
 			.summary(source.getSummary())

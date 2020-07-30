@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class StoryPatchRequest {
+  private String title;
+  private boolean originalStory;
   private StoryType type;
   private String summary;
   private String thumbnail;
