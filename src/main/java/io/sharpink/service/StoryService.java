@@ -18,7 +18,6 @@ import io.sharpink.rest.dto.request.story.StoryPatchRequest;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.rest.exception.UnprocessableEntity422Exception;
 import io.sharpink.service.picture.PictureManagementService;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,7 @@ import java.util.Optional;
 
 import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_PATH;
 import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_WEB_URL;
+import static io.sharpink.rest.exception.NotFound404ReasonEnum.CHAPTER_NOT_FOUND;
 import static io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum.TITLE_ALREADY_USED;
 import static java.util.stream.Collectors.toList;
 
@@ -101,7 +101,7 @@ public class StoryService {
    * Crée et sauvegarde une histoire en base.
    *
    * @param storyRequest Un objet contenant les informations de l'histoire à créer et
-   *                 sauvegarder.
+   *                     sauvegarder.
    * @return L'id de l'entité persistée, qui servira à identifier l'histoire de
    * manière unique.
    */
@@ -120,7 +120,7 @@ public class StoryService {
   /**
    * Met à jour une histoire.
    *
-   * @param id            L'id de l'histoire à mettre à jour.
+   * @param id                L'id de l'histoire à mettre à jour.
    * @param storyPatchRequest Les nouvelles informations (partielles) à ajouter à l'histoire.
    */
   public StoryResponse updateStory(Long id, StoryPatchRequest storyPatchRequest) {
@@ -220,8 +220,32 @@ public class StoryService {
     }
   }
 
+  /**
+   * Removes a chapter from a given story
+   */
+  public void removeChapter(Long storyId, Long chapterPosition) {
+    Story story = storyDao.findById(storyId)
+      .orElseThrow(() -> new NotFound404Exception(CHAPTER_NOT_FOUND));
+
+    List<Chapter> chapters = story.getChapters();
+    if (chapters.size() >= chapterPosition) {
+      chapters.remove(chapterPosition.intValue() - 1);
+      story.setChaptersNumber(story.getChapters().size());
+      shiftPositionsDown(chapters, chapterPosition);
+      storyDao.save(story);
+    } else {
+      throw new NotFound404Exception(CHAPTER_NOT_FOUND);
+    }
+  }
+
   private boolean storyWithSameTitleAlreadyExists(String title) {
     Optional<Story> storyOptional = storyDao.findByTitle(title);
     return storyOptional.isPresent();
+  }
+
+  private void shiftPositionsDown(List<Chapter> chapters, Long chapterPosition) {
+    chapters.stream()
+      .filter(c -> c.getPosition() >= chapterPosition)
+      .forEach(c -> c.setPosition(c.getPosition() - 1));
   }
 }

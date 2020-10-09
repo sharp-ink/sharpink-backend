@@ -4,14 +4,7 @@ package io.sharpink.persistence.entity.story;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import lombok.*;
 import org.hibernate.annotations.LazyCollection;
@@ -62,7 +55,7 @@ public class Story {
   @ToString.Exclude
 	private Member author;
 
-	@OneToMany(mappedBy = "story")
+	@OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private List<Chapter> chapters;
 

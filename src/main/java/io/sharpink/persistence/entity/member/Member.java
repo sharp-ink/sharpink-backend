@@ -47,7 +47,7 @@ public class Member {
 	@Column(name = "STORIES_COUNT")
 	protected Long storiesCount;
 
-	@OneToMany(mappedBy = "author")
+	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	protected List<Story> stories;
 

@@ -107,4 +107,15 @@ public class StoryController {
       return new ResponseEntity<>(new CustomApiError(), INTERNAL_SERVER_ERROR);
     }
   }
+
+  @DeleteMapping("/{storyId}/chapters/{chapterPosition}")
+  public ResponseEntity<?> removeChapter(@PathVariable Long storyId, @PathVariable Long chapterPosition) {
+    try {
+      storyService.removeChapter(storyId, chapterPosition);
+      return new ResponseEntity<>(NO_CONTENT);
+    } catch (NotFound404Exception e) {
+      return new ResponseEntity<>(new CustomApiError(e.getReason().name(), e.getMessage()), INTERNAL_SERVER_ERROR);
+    }
+
+  }
 }
