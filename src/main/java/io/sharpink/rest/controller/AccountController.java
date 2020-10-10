@@ -1,7 +1,7 @@
 package io.sharpink.rest.controller;
 
 import java.util.Optional;
-import io.sharpink.rest.dto.response.member.MemberResponse;
+import io.sharpink.rest.dto.response.user.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +24,12 @@ public class AccountController {
 	}
 
 	@RequestMapping(value = "log-in", method = { RequestMethod.GET, RequestMethod.HEAD })
-	public MemberResponse logIn(@RequestParam String login, @RequestParam String password) {
+	public UserResponse logIn(@RequestParam String login, @RequestParam String password) {
 
-		Optional<MemberResponse> authenticateMember = accountService.logIn(login, password);
+		Optional<UserResponse> authenticatedUser = accountService.logIn(login, password);
 
-		if (authenticateMember.isPresent()) {
-			return authenticateMember.get();
+		if (authenticatedUser.isPresent()) {
+			return authenticatedUser.get();
 		} else {
 			throw new Unauthorized401Exception();
 		}

@@ -1,4 +1,4 @@
-package io.sharpink.rest.dto.response.member;
+package io.sharpink.rest.dto.response.user;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberResponse {
+public class UserResponse {
 
   protected Long id;
 
@@ -25,15 +25,15 @@ public class MemberResponse {
 
   // Informations complémentaires, optionnelles
 
-  protected MemberDetailsResponse memberDetails;
+  protected UserDetailsResponse userDetails;
 
   // public String getLocation() {
   //
-  // String town = (this.memberDetails.town == null) ? "Ville non renseignée" :
+  // String town = (this.userDetails.town == null) ? "Ville non renseignée" :
   // StringUtils
-  // .capitalize(this.memberDetails.town.toLowerCase());
-  // String country = (this.memberDetails.country == null) ? "Pays non renseigné"
-  // : memberDetails.country;
+  // .capitalize(this.userDetails.town.toLowerCase());
+  // String country = (this.userDetails.country == null) ? "Pays non renseigné"
+  // : userDetails.country;
   // return town + " - " + country;
   //
   // }

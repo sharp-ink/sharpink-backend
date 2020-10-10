@@ -1,4 +1,4 @@
-package io.sharpink.rest.dto.request.member;
+package io.sharpink.rest.dto.request.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberPatchRequest {
+public class UserPatchRequest {
   private String nickname;
   private String email;
   private String firstName;

@@ -1,34 +1,34 @@
-package io.sharpink.mapper.member;
+package io.sharpink.mapper.user;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.StoriesLoadingStrategy;
-import io.sharpink.rest.dto.request.member.MemberPatchRequest;
-import io.sharpink.rest.dto.response.member.MemberResponse;
+import io.sharpink.persistence.entity.user.UserDetails;
+import io.sharpink.rest.dto.request.user.UserPatchRequest;
+import io.sharpink.rest.dto.response.user.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import io.sharpink.mapper.story.StoryMapper;
-import io.sharpink.persistence.entity.member.Member;
-import io.sharpink.persistence.entity.member.MemberDetails;
-import io.sharpink.rest.dto.response.member.MemberDetailsResponse;
+import io.sharpink.persistence.entity.user.User;
+import io.sharpink.rest.dto.response.user.UserDetailsResponse;
 
 @Component
-public class MemberMapper {
+public class UserMapper {
 
   private StoryMapper storyMapper;
 
-  // use setter injection here because of circular dependency MemberMapper <-> StoryMapper
   @Autowired
-  public void setStoryMapper(StoryMapper storyMapper) {
+  public UserMapper(@Lazy StoryMapper storyMapper) {
     this.storyMapper = storyMapper;
   }
 
   /**
-   * Construit un objet {@code MemberResponse} à partir d'un objet {@code Member}.
+   * Construit un objet {@code UserResponse} à partir d'un objet {@code User}.
    *
-   * @param source                 L'entité {@code Member} à partir de laquelle on
+   * @param source                 L'entité {@code User} à partir de laquelle on
    *                               construit notre objet.
    * @param storiesLoadingStrategy Indique s'il faut ou non charger la liste des
    *                               histoires, qui est pour rappel chargé par Hibernate
@@ -38,15 +38,15 @@ public class MemberMapper {
    *                               true : charge les histoires, false : ne charge pas
    *                               les histoires (on se contente du nombre total
    *                               d'histoires qui, lui, est toujours chargé)
-   * @return Un {@code Member}
+   * @return Un {@code User}
    */
-  public MemberResponse map(Member source, StoriesLoadingStrategy storiesLoadingStrategy) {
-    MemberResponse target = MemberResponse.builder()
+  public UserResponse map(User source, StoriesLoadingStrategy storiesLoadingStrategy) {
+    UserResponse target = UserResponse.builder()
       .id(source.getId())
       .nickname(source.getNickname())
       .email(source.getEmail())
       .storiesCount(source.getStoriesCount())
-      .memberDetails(source.getMemberDetails().isPresent() ? map(source.getMemberDetails().get()) : null)
+      .userDetails(source.getUserDetails().isPresent() ? map(source.getUserDetails().get()) : null)
       .build();
 
     // on ne charge les histoires que si demandé
@@ -59,10 +59,10 @@ public class MemberMapper {
   }
 
   /**
-   * Construit une {@code List<MemberResponse>} à partir d'une {@code List<Member>}.
+   * Construit une {@code List<UserResponse>} à partir d'une {@code List<User>}.
    *
-   * @param source                 La liste des {@code Member} à partir duquel on
-   *                               construit notre liste de {@code MemberResponse}.
+   * @param source                 La liste des {@code User} à partir duquel on
+   *                               construit notre liste de {@code UserResponse}.
    * @param storiesLoadingStrategy Indique s'il faut ou non charger la liste des
    *                               histoires pour chaque membre, qui sont pour rappel
    *                               chargées par Hibernate avec
@@ -71,29 +71,29 @@ public class MemberMapper {
    *                               true : charge les histoires, false : ne charge pas
    *                               les histoires (on se contente du nombre total
    *                               d'histoires qui, lui, est toujours chargé)
-   * @return Une {@code List<MemberResponse>}
+   * @return Une {@code List<UserResponse>}
    */
-  public List<MemberResponse> map(List<Member> source, StoriesLoadingStrategy storiesLoadingStrategy) {
-    List<MemberResponse> target = new ArrayList<>();
-    for (Member member : source) {
-      target.add(map(member, storiesLoadingStrategy));
+  public List<UserResponse> map(List<User> source, StoriesLoadingStrategy storiesLoadingStrategy) {
+    List<UserResponse> target = new ArrayList<>();
+    for (User user : source) {
+      target.add(map(user, storiesLoadingStrategy));
     }
     return target;
   }
 
-  private MemberDetailsResponse map(MemberDetails source) {
-    return MemberDetailsResponse.builder()
+  private UserDetailsResponse map(UserDetails source) {
+    return UserDetailsResponse.builder()
       .firstName(source.getFirstName())
       .lastName(source.getLastName())
       .profilePicture(source.getProfilePicture())
-      // TODO : finir de mapper les champs de MemberDetails
+      // TODO : finir de mapper les champs de UserDetails
       .build();
   }
 
-  public MemberDetails map(MemberPatchRequest memberPatchRequest) {
-    return MemberDetails.builder()
-      .firstName(memberPatchRequest.getFirstName())
-      .lastName(memberPatchRequest.getLastName())
+  public UserDetails map(UserPatchRequest userPatchRequest) {
+    return UserDetails.builder()
+      .firstName(userPatchRequest.getFirstName())
+      .lastName(userPatchRequest.getLastName())
       // TODO mapper les autres champs
       .build();
   }

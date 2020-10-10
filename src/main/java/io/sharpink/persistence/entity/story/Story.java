@@ -10,7 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import io.sharpink.persistence.entity.member.Member;
+import io.sharpink.persistence.entity.user.User;
 
 import static javax.persistence.EnumType.STRING;
 
@@ -53,7 +53,7 @@ public class Story {
 
 	@ManyToOne
   @ToString.Exclude
-	private Member author;
+	private User author;
 
 	@OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
 	@LazyCollection(LazyCollectionOption.TRUE)

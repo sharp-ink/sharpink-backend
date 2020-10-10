@@ -1,4 +1,4 @@
-package io.sharpink.persistence.entity.member;
+package io.sharpink.persistence.entity.user;
 
 import java.util.Date;
 
@@ -16,19 +16,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "MEMBER_DETAILS")
+@Table(name = "USER_DETAILS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberDetails {
+public class UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Integer id;
 
 	@OneToOne
-	private Member member;
+	private User user;
 
 	@Column(name = "FIRSTNAME")
 	protected String firstName;

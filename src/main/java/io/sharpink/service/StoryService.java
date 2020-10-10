@@ -69,12 +69,12 @@ public class StoryService {
   }
 
   /**
-   * Get stories for a specific {@code Member}
+   * Get stories for a specific {@code User}
    *
-   * @return A {@code List<StoryDto>} containing all stories of the given {@code Member}, empty list if this user has no stories.
+   * @return A {@code List<StoryDto>} containing all stories of the given {@code User}, empty list if this user has no stories.
    */
-  public List<StoryResponse> getStories(Long memberId) {
-    List<Story> stories = storyDao.findByAuthorId(memberId);
+  public List<StoryResponse> getStories(Long userId) {
+    List<Story> stories = storyDao.findByAuthorId(userId);
 
     return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.NONE); // chapters are not necessary
   }
