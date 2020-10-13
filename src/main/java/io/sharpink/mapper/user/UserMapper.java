@@ -1,19 +1,21 @@
 package io.sharpink.mapper.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.StoriesLoadingStrategy;
+import io.sharpink.persistence.entity.user.User;
 import io.sharpink.persistence.entity.user.UserDetails;
+import io.sharpink.persistence.entity.user.UserPreferences;
 import io.sharpink.rest.dto.request.user.UserPatchRequest;
+import io.sharpink.rest.dto.response.user.UserDetailsResponse;
+import io.sharpink.rest.dto.response.user.UserPreferencesResponse;
 import io.sharpink.rest.dto.response.user.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import io.sharpink.mapper.story.StoryMapper;
-import io.sharpink.persistence.entity.user.User;
-import io.sharpink.rest.dto.response.user.UserDetailsResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class UserMapper {
@@ -81,20 +83,26 @@ public class UserMapper {
     return target;
   }
 
+  public UserDetails map(UserPatchRequest userPatchRequest) {
+    return UserDetails.builder()
+      .firstName(userPatchRequest.getFirstName())
+      .lastName(userPatchRequest.getLastName())
+      // TODO mapper les autres champs
+      .build();
+  }
+
+  public UserPreferencesResponse map(UserPreferences source) {
+    return UserPreferencesResponse.builder()
+      .theme(source.getTheme())
+      .build();
+  }
+
   private UserDetailsResponse map(UserDetails source) {
     return UserDetailsResponse.builder()
       .firstName(source.getFirstName())
       .lastName(source.getLastName())
       .profilePicture(source.getProfilePicture())
       // TODO : finir de mapper les champs de UserDetails
-      .build();
-  }
-
-  public UserDetails map(UserPatchRequest userPatchRequest) {
-    return UserDetails.builder()
-      .firstName(userPatchRequest.getFirstName())
-      .lastName(userPatchRequest.getLastName())
-      // TODO mapper les autres champs
       .build();
   }
 }

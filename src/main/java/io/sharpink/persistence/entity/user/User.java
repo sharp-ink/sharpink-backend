@@ -1,18 +1,13 @@
 package io.sharpink.persistence.entity.user;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.persistence.*;
-
+import io.sharpink.persistence.entity.story.Story;
+import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import io.sharpink.persistence.entity.story.Story;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import javax.persistence.*;
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "USER")
@@ -34,6 +29,12 @@ public class User {
   @Getter(AccessLevel.NONE)
   protected UserDetails userDetails;
 
+  // Préférences de l'utilisateur, optionnelles
+  @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  @Getter(AccessLevel.NONE)
+  @ToString.Exclude
+  private UserPreferences userPreferences;
+
   // Les histoires de l'utilisateur
 
   /**
@@ -46,9 +47,13 @@ public class User {
   @LazyCollection(LazyCollectionOption.TRUE)
   protected List<Story> stories;
 
-  // getter personnalisé pour renvoyer un Optional<UserDetails> au lieu d'un UserDetails
+  // getter personnalisé pour renvoyer un Optional
   public Optional<UserDetails> getUserDetails() {
     return Optional.ofNullable(userDetails);
   }
 
+  // getter personnalisé pour renvoyer un Optional
+  public Optional<UserPreferences> getUserPreferences() {
+    return Optional.ofNullable(userPreferences);
+  }
 }

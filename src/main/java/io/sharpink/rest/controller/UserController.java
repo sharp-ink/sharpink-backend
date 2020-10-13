@@ -1,16 +1,17 @@
 package io.sharpink.rest.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import io.sharpink.rest.dto.request.user.UserPatchRequest;
-import io.sharpink.rest.dto.response.user.UserResponse;
+import io.sharpink.rest.dto.request.user.UserPreferencesPatchRequest;
 import io.sharpink.rest.dto.response.story.StoryResponse;
+import io.sharpink.rest.dto.response.user.UserPreferencesResponse;
+import io.sharpink.rest.dto.response.user.UserResponse;
+import io.sharpink.rest.exception.NotFound404Exception;
+import io.sharpink.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import io.sharpink.rest.exception.NotFound404Exception;
-import io.sharpink.service.UserService;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -30,21 +31,27 @@ public class UserController {
 
 	@GetMapping("/{id}")
 	public UserResponse getUser(@PathVariable Long id) {
-		Optional<UserResponse> optionalUserResponse = userService.getUser(id);
-		if (optionalUserResponse.isPresent()) {
-			return optionalUserResponse.get();
-		} else {
-			throw new NotFound404Exception();
-		}
-	}
-
-	@GetMapping("/{id}/stories")
-  public List<StoryResponse> getStories(@PathVariable Long id) {
-	  return userService.getStories(id);
+    Optional<UserResponse> optionalUserResponse = userService.getUser(id);
+    return optionalUserResponse.orElseThrow(NotFound404Exception::new);
   }
 
-	@PutMapping("/{id}/profile")
+  @GetMapping("/{id}/stories")
+  public List<StoryResponse> getStories(@PathVariable Long id) {
+    return userService.getStories(id);
+  }
+
+  @PutMapping("/{id}/profile")
   public UserResponse updateUserProfile(@PathVariable Long id, @RequestBody UserPatchRequest userPatchRequest) {
-	  return userService.updateUserProfile(id, userPatchRequest);
+    return userService.updateUserProfile(id, userPatchRequest);
+  }
+
+  @GetMapping("/{id}/preferences")
+  public UserPreferencesResponse getUserPreferences(@PathVariable Long id) {
+    return userService.getPreferences(id);
+  }
+
+  @PatchMapping("/{id}/preferences")
+  public UserPreferencesResponse updateUserPreferences(@PathVariable Long id, @RequestBody UserPreferencesPatchRequest userPreferencesPatchRequest) {
+    return userService.updateUserPreferences(id, userPreferencesPatchRequest);
   }
 }

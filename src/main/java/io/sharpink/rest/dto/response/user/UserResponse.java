@@ -1,12 +1,12 @@
 package io.sharpink.rest.dto.response.user;
 
-import java.util.List;
-
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -24,7 +24,6 @@ public class UserResponse {
   protected List<StoryResponse> stories;
 
   // Informations complémentaires, optionnelles
-
   protected UserDetailsResponse userDetails;
 
   // public String getLocation() {

@@ -2,16 +2,20 @@ package io.sharpink.service;
 
 import io.sharpink.mapper.user.UserMapper;
 import io.sharpink.persistence.dao.UserDao;
+import io.sharpink.persistence.entity.story.StoriesLoadingStrategy;
 import io.sharpink.persistence.entity.user.User;
 import io.sharpink.persistence.entity.user.UserDetails;
-import io.sharpink.persistence.entity.story.StoriesLoadingStrategy;
-import io.sharpink.rest.dto.response.user.UserResponse;
-import io.sharpink.rest.dto.response.story.StoryResponse;
-import io.sharpink.rest.exception.InternalError500Exception;
-import io.sharpink.util.picture.PictureUtil;
+import io.sharpink.persistence.entity.user.UserPreferences;
 import io.sharpink.rest.dto.request.user.UserPatchRequest;
+import io.sharpink.rest.dto.request.user.UserPreferencesPatchRequest;
+import io.sharpink.rest.dto.response.story.StoryResponse;
+import io.sharpink.rest.dto.response.user.UserPreferencesResponse;
+import io.sharpink.rest.dto.response.user.UserResponse;
+import io.sharpink.rest.exception.InternalError500Exception;
+import io.sharpink.rest.exception.MissingEntity;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.picture.PictureManagementService;
+import io.sharpink.util.picture.PictureUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,9 +64,7 @@ public class UserService {
   }
 
   public UserResponse updateUserProfile(Long id, UserPatchRequest userPatchRequest) {
-    Optional<User> memberOptional = userDao.findById(id);
-
-    User user = memberOptional.orElseThrow(NotFound404Exception::new);
+    User user = userDao.findById(id).orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
 
     // update profile informations
     user.setNickname(userPatchRequest.getNickname());
@@ -94,5 +96,25 @@ public class UserService {
     userDao.save(user);
 
     return userMapper.map(user, StoriesLoadingStrategy.DISABLED);
+  }
+
+  public UserPreferencesResponse getPreferences(Long id) {
+    User user = userDao.findById(id).orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
+    if (user.getUserPreferences().isPresent()) {
+      return userMapper.map(user.getUserPreferences().get());
+    } else {
+      return new UserPreferencesResponse();
+    }
+  }
+
+  public UserPreferencesResponse updateUserPreferences(Long id, UserPreferencesPatchRequest userPreferencesPatchRequest) {
+    User user = userDao.findById(id).orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
+    UserPreferences userPreferences = user.getUserPreferences().orElseGet(UserPreferences::new);
+    if (userPreferencesPatchRequest.getTheme() != null) {
+      userPreferences.setTheme(userPreferencesPatchRequest.getTheme());
+    }
+    user.setUserPreferences(userPreferences);
+    userDao.save(user);
+    return userMapper.map(userPreferences);
   }
 }

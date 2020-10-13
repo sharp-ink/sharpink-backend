@@ -9,15 +9,15 @@ import io.sharpink.persistence.entity.story.Chapter;
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.Story;
 import io.sharpink.rest.dto.request.story.ChapterRequest;
+import io.sharpink.rest.dto.request.story.StoryPatchRequest;
 import io.sharpink.rest.dto.request.story.StoryRequest;
 import io.sharpink.rest.dto.response.story.ChapterResponse;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import io.sharpink.rest.exception.InternalError500Exception;
-import io.sharpink.util.picture.PictureUtil;
-import io.sharpink.rest.dto.request.story.StoryPatchRequest;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.rest.exception.UnprocessableEntity422Exception;
 import io.sharpink.service.picture.PictureManagementService;
+import io.sharpink.util.picture.PictureUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ import java.util.Optional;
 
 import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_PATH;
 import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_WEB_URL;
-import static io.sharpink.rest.exception.NotFound404ReasonEnum.CHAPTER_NOT_FOUND;
+import static io.sharpink.rest.exception.MissingEntity.CHAPTER;
 import static io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum.TITLE_ALREADY_USED;
 import static java.util.stream.Collectors.toList;
 
@@ -225,7 +225,7 @@ public class StoryService {
    */
   public void removeChapter(Long storyId, Long chapterPosition) {
     Story story = storyDao.findById(storyId)
-      .orElseThrow(() -> new NotFound404Exception(CHAPTER_NOT_FOUND));
+      .orElseThrow(() -> new NotFound404Exception(CHAPTER));
 
     List<Chapter> chapters = story.getChapters();
     if (chapters.size() >= chapterPosition) {
@@ -234,7 +234,7 @@ public class StoryService {
       shiftPositionsDown(chapters, chapterPosition);
       storyDao.save(story);
     } else {
-      throw new NotFound404Exception(CHAPTER_NOT_FOUND);
+      throw new NotFound404Exception(CHAPTER);
     }
   }
 

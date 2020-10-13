@@ -1,19 +1,9 @@
 package io.sharpink.persistence.entity.user;
 
+import lombok.*;
+
+import javax.persistence.*;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "USER_DETAILS")
@@ -27,7 +17,8 @@ public class UserDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Integer id;
 
-	@OneToOne
+  @OneToOne
+  @ToString.Exclude
 	private User user;
 
 	@Column(name = "FIRSTNAME")

@@ -14,5 +14,5 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotFound404Exception extends RuntimeException {
-  private NotFound404ReasonEnum reason;
+  private MissingEntity reason;
 }
