@@ -8,8 +8,10 @@ import io.sharpink.persistence.entity.user.UserDetails;
 import io.sharpink.persistence.entity.user.UserPreferences;
 import io.sharpink.rest.dto.request.user.UserPatchRequest;
 import io.sharpink.rest.dto.response.user.UserDetailsResponse;
-import io.sharpink.rest.dto.response.user.UserPreferencesResponse;
 import io.sharpink.rest.dto.response.user.UserResponse;
+import io.sharpink.rest.dto.shared.user.preferences.UserPreferencesDto;
+import io.sharpink.util.json.JsonUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -91,10 +93,11 @@ public class UserMapper {
       .build();
   }
 
-  public UserPreferencesResponse map(UserPreferences source) {
-    return UserPreferencesResponse.builder()
-      .theme(source.getTheme())
-      .build();
+  public UserPreferencesDto map(UserPreferences source) {
+    if (StringUtils.isEmpty(source.getPreferences())) {
+      return new UserPreferencesDto();
+    }
+    return JsonUtil.fromJson(source.getPreferences(), UserPreferencesDto.class);
   }
 
   private UserDetailsResponse map(UserDetails source) {

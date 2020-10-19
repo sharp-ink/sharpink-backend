@@ -1,10 +1,9 @@
 package io.sharpink.rest.controller;
 
 import io.sharpink.rest.dto.request.user.UserPatchRequest;
-import io.sharpink.rest.dto.request.user.UserPreferencesPatchRequest;
 import io.sharpink.rest.dto.response.story.StoryResponse;
-import io.sharpink.rest.dto.response.user.UserPreferencesResponse;
 import io.sharpink.rest.dto.response.user.UserResponse;
+import io.sharpink.rest.dto.shared.user.preferences.UserPreferencesDto;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +45,12 @@ public class UserController {
   }
 
   @GetMapping("/{id}/preferences")
-  public UserPreferencesResponse getUserPreferences(@PathVariable Long id) {
+  public UserPreferencesDto getUserPreferences(@PathVariable Long id) {
     return userService.getPreferences(id);
   }
 
   @PatchMapping("/{id}/preferences")
-  public UserPreferencesResponse updateUserPreferences(@PathVariable Long id, @RequestBody UserPreferencesPatchRequest userPreferencesPatchRequest) {
-    return userService.updateUserPreferences(id, userPreferencesPatchRequest);
+  public UserPreferencesDto updateUserPreferences(@PathVariable Long id, @RequestBody UserPreferencesDto userPreferencesDto) {
+    return userService.updateUserPreferences(id, userPreferencesDto);
   }
 }

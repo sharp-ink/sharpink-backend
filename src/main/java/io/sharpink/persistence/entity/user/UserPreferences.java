@@ -1,6 +1,5 @@
 package io.sharpink.persistence.entity.user;
 
-import io.sharpink.persistence.entity.user.preferences.Theme;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,8 +18,7 @@ public class UserPreferences {
 
   @OneToOne
   @ToString.Exclude
-  private User user;
+  protected User user;
 
-  @Enumerated(EnumType.STRING)
-  protected Theme theme;
+  protected String preferences;
 }

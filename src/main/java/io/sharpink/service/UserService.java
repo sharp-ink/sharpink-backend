@@ -7,15 +7,16 @@ import io.sharpink.persistence.entity.user.User;
 import io.sharpink.persistence.entity.user.UserDetails;
 import io.sharpink.persistence.entity.user.UserPreferences;
 import io.sharpink.rest.dto.request.user.UserPatchRequest;
-import io.sharpink.rest.dto.request.user.UserPreferencesPatchRequest;
 import io.sharpink.rest.dto.response.story.StoryResponse;
-import io.sharpink.rest.dto.response.user.UserPreferencesResponse;
 import io.sharpink.rest.dto.response.user.UserResponse;
+import io.sharpink.rest.dto.shared.user.preferences.UserPreferencesDto;
 import io.sharpink.rest.exception.InternalError500Exception;
 import io.sharpink.rest.exception.MissingEntity;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.picture.PictureManagementService;
+import io.sharpink.util.json.JsonUtil;
 import io.sharpink.util.picture.PictureUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -98,22 +99,27 @@ public class UserService {
     return userMapper.map(user, StoriesLoadingStrategy.DISABLED);
   }
 
-  public UserPreferencesResponse getPreferences(Long id) {
+  public UserPreferencesDto getPreferences(Long id) {
     User user = userDao.findById(id).orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
     if (user.getUserPreferences().isPresent()) {
       return userMapper.map(user.getUserPreferences().get());
     } else {
-      return new UserPreferencesResponse();
+      return new UserPreferencesDto();
     }
   }
 
-  public UserPreferencesResponse updateUserPreferences(Long id, UserPreferencesPatchRequest userPreferencesPatchRequest) {
+  public UserPreferencesDto updateUserPreferences(Long id, UserPreferencesDto userPreferencesDto) {
     User user = userDao.findById(id).orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
     UserPreferences userPreferences = user.getUserPreferences().orElseGet(UserPreferences::new);
-    if (userPreferencesPatchRequest.getTheme() != null) {
-      userPreferences.setTheme(userPreferencesPatchRequest.getTheme());
+    UserPreferencesDto currentUserPreferencesDto = StringUtils.isEmpty(userPreferences.getPreferences()) ?
+      new UserPreferencesDto() :
+      JsonUtil.fromJson(userPreferences.getPreferences(), UserPreferencesDto.class);
+
+    if (userPreferencesDto.getAppearance() != null && userPreferencesDto.getAppearance().getTheme() != null) {
+      currentUserPreferencesDto.getAppearance().setTheme(userPreferencesDto.getAppearance().getTheme());
     }
-    user.setUserPreferences(userPreferences);
+
+    userPreferences.setPreferences(JsonUtil.toJson(currentUserPreferencesDto));
     userDao.save(user);
     return userMapper.map(userPreferences);
   }
