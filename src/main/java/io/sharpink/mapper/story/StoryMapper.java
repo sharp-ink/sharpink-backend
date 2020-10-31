@@ -1,17 +1,16 @@
 package io.sharpink.mapper.story;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.scaunois.common.util.date.DateUtil;
 import io.sharpink.mapper.user.UserMapper;
+import io.sharpink.persistence.dao.user.UserDao;
 import io.sharpink.persistence.entity.story.*;
 import io.sharpink.rest.dto.request.story.StoryRequest;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import io.sharpink.persistence.dao.UserDao;
+import java.util.ArrayList;
+import java.util.List;
 
 // @formatter:off
 @Component

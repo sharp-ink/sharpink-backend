@@ -1,7 +1,7 @@
 package io.sharpink.service;
 
 import io.sharpink.mapper.user.UserMapper;
-import io.sharpink.persistence.dao.UserDao;
+import io.sharpink.persistence.dao.user.UserDao;
 import io.sharpink.persistence.entity.story.StoriesLoadingStrategy;
 import io.sharpink.persistence.entity.user.User;
 import io.sharpink.persistence.entity.user.UserDetails;

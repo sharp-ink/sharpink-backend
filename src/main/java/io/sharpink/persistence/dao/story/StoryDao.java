@@ -1,11 +1,10 @@
-package io.sharpink.persistence.dao;
+package io.sharpink.persistence.dao.story;
 
+import io.sharpink.persistence.entity.story.Story;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import io.sharpink.persistence.entity.story.Story;
 
 import java.util.List;
 import java.util.Optional;

@@ -3,8 +3,8 @@ package io.sharpink.service;
 import io.scaunois.common.util.date.DateUtil;
 import io.sharpink.mapper.story.ChapterMapper;
 import io.sharpink.mapper.story.StoryMapper;
-import io.sharpink.persistence.dao.ChapterDao;
-import io.sharpink.persistence.dao.StoryDao;
+import io.sharpink.persistence.dao.story.ChapterDao;
+import io.sharpink.persistence.dao.story.StoryDao;
 import io.sharpink.persistence.entity.story.Chapter;
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.Story;
@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,8 +111,9 @@ public class StoryService {
       throw new UnprocessableEntity422Exception(TITLE_ALREADY_USED);
     } else {
       Story story = storyMapper.toStory(storyRequest);
-      story.setCreationDate(DateUtil.toDate(LocalDateTime.now()));
-      story.setLastModificationDate(story.getCreationDate());
+      Date now = DateUtil.toDate(LocalDateTime.now());
+      story.setCreationDate(now);
+      story.setLastModificationDate(now);
       story = storyDao.save(story);
       return story.getId(); // returns id of newly created entity
     }

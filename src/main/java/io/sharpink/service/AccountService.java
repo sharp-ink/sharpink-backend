@@ -1,14 +1,14 @@
 package io.sharpink.service;
 
-import java.util.Optional;
-
 import io.sharpink.mapper.user.UserMapper;
+import io.sharpink.persistence.dao.user.UserDao;
 import io.sharpink.persistence.entity.story.StoriesLoadingStrategy;
+import io.sharpink.persistence.entity.user.User;
 import io.sharpink.rest.dto.response.user.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import io.sharpink.persistence.dao.UserDao;
-import io.sharpink.persistence.entity.user.User;
+
+import java.util.Optional;
 
 @Service
 public class AccountService {

@@ -1,4 +1,4 @@
-package io.sharpink.persistence.dao;
+package io.sharpink.persistence.dao.story;
 
 import io.sharpink.persistence.entity.story.Chapter;
 import org.springframework.data.repository.CrudRepository;

@@ -1,19 +1,18 @@
 package io.sharpink.rest.controller;
 
-import java.util.Optional;
 import io.sharpink.rest.dto.response.user.UserResponse;
+import io.sharpink.rest.exception.Unauthorized401Exception;
+import io.sharpink.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import io.sharpink.rest.exception.Unauthorized401Exception;
-import io.sharpink.service.AccountService;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/accounts")
-@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 86400)
 public class AccountController {
 
 	private AccountService accountService;

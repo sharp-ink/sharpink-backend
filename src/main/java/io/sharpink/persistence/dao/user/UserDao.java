@@ -1,11 +1,11 @@
-package io.sharpink.persistence.dao;
-
-import java.util.Optional;
+package io.sharpink.persistence.dao.user;
 
 import io.sharpink.persistence.entity.user.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public interface UserDao extends CrudRepository<User, Long> {
