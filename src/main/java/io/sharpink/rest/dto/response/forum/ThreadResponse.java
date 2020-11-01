@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class ThreadResponse {
   private Long id;
   private Long authorId;
+  private String authorNickname;
   private String title;
   @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
   private LocalDateTime creationDate;

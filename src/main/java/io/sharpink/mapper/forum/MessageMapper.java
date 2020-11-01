@@ -15,6 +15,7 @@ public class MessageMapper {
       .id(source.getId())
       .threadId(source.getThread().getId())
       .authorId(source.getAuthor().getId())
+      .authorNickname(source.getAuthor().getNickname())
       .publicationDate(source.getPublicationDate())
       .content(source.getContent())
       .build();

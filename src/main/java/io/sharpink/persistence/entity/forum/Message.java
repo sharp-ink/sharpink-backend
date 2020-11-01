@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "FORUM_MESSAGE")
 @Data
 @NoArgsConstructor
-public class Message {
+public class Message implements Comparable<Message> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,14 +20,18 @@ public class Message {
   @ManyToOne(optional = false)
   protected Thread thread;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "author_id")
   protected User author;
 
-  @Column(name="date", nullable = false)
+  @Column(name = "date", nullable = false)
   protected LocalDateTime publicationDate;
 
   @Column(nullable = false, columnDefinition = "TEXT")
   protected String content;
 
+  @Override
+  public int compareTo(Message o) {
+    return this.publicationDate.compareTo(o.publicationDate);
+  }
 }

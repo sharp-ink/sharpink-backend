@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -28,13 +29,14 @@ public class ForumService {
 
   public List<ThreadResponse> getAllThreads() {
     List<Thread> threads = (List<Thread>) threadDao.findAll();
+    Collections.sort(threads, Collections.reverseOrder());
     return threadMapper.toThreadResponseList(threads);
   }
 
   public long createThread(ThreadRequest threadRequest) {
     Thread thread = threadMapper.toThread(threadRequest);
 
-    thread.setOriginalAuthor(userDao.findById(threadRequest.getOriginalAuthorId()).get());
+    thread.setAuthor(userDao.findById(threadRequest.getOriginalAuthorId()).get());
 
     thread.setCreationDate(LocalDateTime.now());
 

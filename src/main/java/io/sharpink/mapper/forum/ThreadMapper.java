@@ -7,6 +7,7 @@ import io.sharpink.rest.dto.response.forum.ThreadResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,14 +26,16 @@ public class ThreadMapper {
   public ThreadResponse toThreadResponse(Thread source) {
     ThreadResponse target = ThreadResponse.builder()
       .id(source.getId())
-      .authorId(source.getOriginalAuthor().getId())
       .title(source.getTitle())
+      .authorId(source.getAuthor().getId())
+      .authorNickname(source.getAuthor().getNickname())
       .creationDate(source.getCreationDate())
       .messagesCount(source.getMessages().size())
       .build();
 
     if (isNotEmpty(source.getMessages())) {
       List<Message> messages = source.getMessages();
+      Collections.sort(messages, Collections.reverseOrder());
       Message lastMessage = messages.get(messages.size() - 1);
       target.setLastMessage(messageMapper.map(lastMessage));
     }

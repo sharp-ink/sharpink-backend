@@ -16,6 +16,7 @@ public class MessageResponse {
   private Long id;
   private Long threadId;
   private Long authorId;
+  private String authorNickname;
   @JsonFormat(pattern = "yyyyMMdd HH:mm:ss.SSSSSS")
   private LocalDateTime publicationDate;
   private String content;
