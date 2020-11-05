@@ -1,6 +1,7 @@
 package io.sharpink.mapper.forum;
 
 import io.sharpink.persistence.entity.forum.Message;
+import io.sharpink.persistence.entity.forum.MessagesLoadingStrategy;
 import io.sharpink.persistence.entity.forum.Thread;
 import io.sharpink.rest.dto.request.ThreadRequest;
 import io.sharpink.rest.dto.response.forum.ThreadResponse;
@@ -23,7 +24,7 @@ public class ThreadMapper {
     this.messageMapper = messageMapper;
   }
 
-  public ThreadResponse toThreadResponse(Thread source) {
+  public ThreadResponse toThreadResponse(Thread source, MessagesLoadingStrategy messagesLoadingStrategy) {
     ThreadResponse target = ThreadResponse.builder()
       .id(source.getId())
       .title(source.getTitle())
@@ -33,18 +34,23 @@ public class ThreadMapper {
       .messagesCount(source.getMessages().size())
       .build();
 
-    if (isNotEmpty(source.getMessages())) {
-      List<Message> messages = source.getMessages();
+    List<Message> messages = source.getMessages();
+
+    if (isNotEmpty(messages)) {
       Collections.sort(messages, Collections.reverseOrder());
       Message lastMessage = messages.get(messages.size() - 1);
-      target.setLastMessage(messageMapper.map(lastMessage));
+      target.setLastMessage(messageMapper.toMessageResponse(lastMessage));
+    }
+
+    if (messagesLoadingStrategy == MessagesLoadingStrategy.ENABLED) {
+      target.setMessages(messageMapper.toMessageResponseList(messages));
     }
 
     return target;
   }
 
   public List<ThreadResponse> toThreadResponseList(List<Thread> source) {
-    return source.stream().map(this::toThreadResponse).collect(Collectors.toList());
+    return source.stream().map(thread -> this.toThreadResponse(thread, MessagesLoadingStrategy.DISABLED)).collect(Collectors.toList());
   }
 
   public Thread toThread(ThreadRequest threadRequest) {

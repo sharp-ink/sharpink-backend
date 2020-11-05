@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Component
 public class MessageMapper {
 
-  public MessageResponse map(Message source) {
+  public MessageResponse toMessageResponse(Message source) {
     return MessageResponse.builder()
       .id(source.getId())
       .threadId(source.getThread().getId())
@@ -21,8 +21,8 @@ public class MessageMapper {
       .build();
   }
 
-  public List<MessageResponse> map(List<Message> source) {
-    return source.stream().map(this::map).collect(Collectors.toList());
+  public List<MessageResponse> toMessageResponseList(List<Message> source) {
+    return source.stream().map(this::toMessageResponse).collect(Collectors.toList());
   }
 
 }

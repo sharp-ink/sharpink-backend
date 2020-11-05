@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,6 +20,7 @@ public class ThreadResponse {
   private String title;
   @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
   private LocalDateTime creationDate;
-  private int messagesCount;
-  private MessageResponse lastMessage;
+  private int messagesCount; // toujours renseigné
+  private MessageResponse lastMessage; // toujours renseigné
+  private List<MessageResponse> messages; // pas toujours renseigné
 }
