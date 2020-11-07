@@ -3,7 +3,7 @@ package io.sharpink.mapper.forum;
 import io.sharpink.persistence.entity.forum.Message;
 import io.sharpink.persistence.entity.forum.MessagesLoadingStrategy;
 import io.sharpink.persistence.entity.forum.Thread;
-import io.sharpink.rest.dto.request.ThreadRequest;
+import io.sharpink.rest.dto.request.forum.ThreadRequest;
 import io.sharpink.rest.dto.response.forum.ThreadResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,7 +37,7 @@ public class ThreadMapper {
     List<Message> messages = source.getMessages();
 
     if (isNotEmpty(messages)) {
-      Collections.sort(messages, Collections.reverseOrder());
+      Collections.sort(messages);
       Message lastMessage = messages.get(messages.size() - 1);
       target.setLastMessage(messageMapper.toMessageResponse(lastMessage));
     }

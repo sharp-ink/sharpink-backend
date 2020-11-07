@@ -1,6 +1,7 @@
 package io.sharpink.mapper.forum;
 
 import io.sharpink.persistence.entity.forum.Message;
+import io.sharpink.rest.dto.request.forum.MessageRequest;
 import io.sharpink.rest.dto.response.forum.MessageResponse;
 import org.springframework.stereotype.Component;
 
@@ -25,4 +26,7 @@ public class MessageMapper {
     return source.stream().map(this::toMessageResponse).collect(Collectors.toList());
   }
 
+  public Message toMessage(MessageRequest source) {
+    return Message.builder().content(source.getContent()).build();
+  }
 }

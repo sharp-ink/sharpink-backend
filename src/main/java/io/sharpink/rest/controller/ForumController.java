@@ -1,6 +1,7 @@
 package io.sharpink.rest.controller;
 
-import io.sharpink.rest.dto.request.ThreadRequest;
+import io.sharpink.rest.dto.request.forum.MessageRequest;
+import io.sharpink.rest.dto.request.forum.ThreadRequest;
 import io.sharpink.rest.dto.response.forum.ThreadResponse;
 import io.sharpink.rest.exception.CustomApiError;
 import io.sharpink.rest.exception.MissingEntity;
@@ -33,6 +34,16 @@ public class ForumController {
     return forumService.getAllThreads();
   }
 
+  @PostMapping(value = "")
+  public ResponseEntity<?> createThread(@RequestBody @Valid ThreadRequest threadRequest) {
+    try {
+      long threadId = forumService.createThread(threadRequest);
+      return new ResponseEntity<>(threadId, CREATED);
+    } catch (Exception e) {
+      return new ResponseEntity<>(new CustomApiError(null, e.getMessage()), INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @GetMapping(value = "/{id}")
   public ThreadResponse getThread(@PathVariable Long id) {
     Optional<ThreadResponse> optionalThreadResponse = forumService.getThread(id);
@@ -43,11 +54,11 @@ public class ForumController {
     }
   }
 
-  @PostMapping(value = "")
-  public ResponseEntity<?> createThread(@RequestBody @Valid ThreadRequest threadRequest) {
+  @PostMapping(value = "/{id}")
+  public ResponseEntity<?> createMessage(@PathVariable Long id, @RequestBody @Valid MessageRequest messageRequest) {
     try {
-      long threadId = forumService.createThread(threadRequest);
-      return new ResponseEntity<>(threadId, CREATED);
+      long messageId = forumService.createMessage(id, messageRequest);
+      return new ResponseEntity<>(messageId, CREATED);
     } catch (Exception e) {
       return new ResponseEntity<>(new CustomApiError(null, e.getMessage()), INTERNAL_SERVER_ERROR);
     }

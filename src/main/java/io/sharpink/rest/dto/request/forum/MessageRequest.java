@@ -1,4 +1,4 @@
-package io.sharpink.rest.dto.request;
+package io.sharpink.rest.dto.request.forum;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +11,12 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ThreadRequest {
+public class MessageRequest {
 
   @NotNull
-  private Long originalAuthorId;
+  private Long authorId;
 
   @NotNull
-  private String title;
+  private String content;
 
 }

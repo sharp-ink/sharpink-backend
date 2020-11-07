@@ -1,6 +1,8 @@
 package io.sharpink.persistence.entity.forum;
 
 import io.sharpink.persistence.entity.user.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "FORUM_MESSAGE")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Message implements Comparable<Message> {
 
   @Id
