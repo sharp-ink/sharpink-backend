@@ -19,5 +19,6 @@ public class MessageResponse {
   private String authorNickname;
   @JsonFormat(pattern = "yyyyMMdd HH:mm:ss.SSSSSS")
   private LocalDateTime publicationDate;
+  private Integer number;
   private String content;
 }

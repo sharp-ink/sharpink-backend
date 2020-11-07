@@ -15,8 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/threads")
@@ -64,4 +63,9 @@ public class ForumController {
     }
   }
 
+  @DeleteMapping(value = "/{id}/messages/{messageNumber}")
+  public ResponseEntity<?> removeMessage(@PathVariable Long id, @PathVariable int messageNumber) {
+    forumService.removeMessage(id, messageNumber);
+    return new ResponseEntity<>(NO_CONTENT);
+  }
 }

@@ -31,6 +31,9 @@ public class Message implements Comparable<Message> {
   @Column(name = "date", nullable = false)
   protected LocalDateTime publicationDate;
 
+  @Column(name = "number", nullable = false, unique = true, updatable = false)
+  protected Integer number;
+
   @Column(nullable = false, columnDefinition = "TEXT")
   protected String content;
 

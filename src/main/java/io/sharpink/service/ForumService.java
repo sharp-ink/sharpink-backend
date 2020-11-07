@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 @Service
 public class ForumService {
 
@@ -61,13 +63,28 @@ public class ForumService {
     return thread.getId();
   }
 
-  public long createMessage(Long threadId, MessageRequest messageRequest) {
+  public synchronized long createMessage(Long threadId, MessageRequest messageRequest) {
+
     Message message = messageMapper.toMessage(messageRequest);
-    message.setThread(threadDao.findById(threadId).get());
     message.setAuthor(userDao.findById(messageRequest.getAuthorId()).get());
     message.setPublicationDate(LocalDateTime.now());
 
+    Thread thread = threadDao.findById(threadId).get();
+    message.setThread(thread);
+
+    List<Message> messages = thread.getMessages();
+    if (isNotEmpty(messages)) {
+      Collections.sort(messages, Collections.reverseOrder());
+      message.setNumber(messages.get(0).getNumber() + 1);
+    }
+
     message = messageDao.save(message);
     return message.getId();
+  }
+
+  public synchronized void removeMessage(Long id, int number) {
+    Thread thread = threadDao.findById(id).get();
+    thread.getMessages().removeIf(message -> message.getNumber() == number);
+    threadDao.save(thread);
   }
 }
