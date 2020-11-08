@@ -49,7 +49,7 @@ public class ForumController {
     if (optionalThreadResponse.isPresent()) {
       return optionalThreadResponse.get();
     } else {
-      throw new NotFound404Exception(MissingEntity.THREAD);
+      throw new NotFound404Exception(MissingEntity.FORUM_THREAD);
     }
   }
 
@@ -58,6 +58,16 @@ public class ForumController {
     try {
       long messageId = forumService.createMessage(id, messageRequest);
       return new ResponseEntity<>(messageId, CREATED);
+    } catch (Exception e) {
+      return new ResponseEntity<>(new CustomApiError(null, e.getMessage()), INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @DeleteMapping(value = "/{id}")
+  public ResponseEntity<?> removeThread(@PathVariable Long id) {
+    try {
+      forumService.removeThread(id);
+      return new ResponseEntity<>(NO_CONTENT);
     } catch (Exception e) {
       return new ResponseEntity<>(new CustomApiError(null, e.getMessage()), INTERNAL_SERVER_ERROR);
     }

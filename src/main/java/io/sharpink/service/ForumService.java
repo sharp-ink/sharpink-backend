@@ -13,7 +13,10 @@ import io.sharpink.persistence.entity.story.Story;
 import io.sharpink.rest.dto.request.forum.MessageRequest;
 import io.sharpink.rest.dto.request.forum.ThreadRequest;
 import io.sharpink.rest.dto.response.forum.ThreadResponse;
+import io.sharpink.rest.exception.MissingEntity;
+import io.sharpink.rest.exception.NotFound404Exception;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -72,6 +75,14 @@ public class ForumService {
     }
 
     return thread.getId();
+  }
+
+  public synchronized void removeThread(Long id) {
+    try {
+      threadDao.deleteById(id);
+    } catch (EmptyResultDataAccessException e) {
+      throw new NotFound404Exception(MissingEntity.FORUM_THREAD);
+    }
   }
 
   public synchronized long createMessage(Long threadId, MessageRequest messageRequest) {

@@ -4,5 +4,6 @@ public enum MissingEntity {
   USER,
   STORY,
   CHAPTER,
-  THREAD
+  FORUM_THREAD,
+  FORUM_MESSAGE
 }
