@@ -29,20 +29,21 @@ public class StoryMapper {
 
   public StoryResponse toStoryResponse(Story source, ChaptersLoadingStrategy chaptersLoadingStrategy) {
 		StoryResponse target = StoryResponse.builder()
-			.id(source.getId())
-			.title(source.getTitle())
-			.type(source.getType().getValue())
-			.status(source.getStatus().getValue())
-			.summary(source.getSummary())
+      .id(source.getId())
+      .title(source.getTitle())
+      .type(source.getType().getValue())
+      .status(source.getStatus().getValue())
+      .summary(source.getSummary())
       .thumbnail(source.getThumbnail())
-			.published(source.isPublished())
-			.chaptersNumber(source.getChaptersNumber())
-			.originalStory(source.isOriginalStory())
-			.authorId(source.getAuthor().getId())
-			.author(userMapper.map(source.getAuthor(), StoriesLoadingStrategy.DISABLED)) // TODO : should we keep that ?
-			.creationDate(DateUtil.toLocalDateTime(source.getCreationDate()))
-			.lastModificationDate(DateUtil.toLocalDateTime(source.getLastModificationDate()))
-			.finalReleaseDate(DateUtil.toLocalDateTime(source.getFinalReleaseDate()))
+      .published(source.isPublished())
+      .chaptersNumber(source.getChaptersNumber())
+      .originalStory(source.isOriginalStory())
+      .authorId(source.getAuthor().getId())
+      .author(userMapper.map(source.getAuthor(), StoriesLoadingStrategy.DISABLED)) // TODO : should we keep that ?
+      .creationDate(DateUtil.toLocalDateTime(source.getCreationDate()))
+      .lastModificationDate(DateUtil.toLocalDateTime(source.getLastModificationDate()))
+      .finalReleaseDate(DateUtil.toLocalDateTime(source.getFinalReleaseDate()))
+      .threadId(source.getThread() != null ? source.getThread().getId() : null)
 			.build();
 
 		if (chaptersLoadingStrategy == ChaptersLoadingStrategy.ALL) {

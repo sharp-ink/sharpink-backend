@@ -4,10 +4,12 @@ import io.sharpink.mapper.forum.MessageMapper;
 import io.sharpink.mapper.forum.ThreadMapper;
 import io.sharpink.persistence.dao.forum.MessageDao;
 import io.sharpink.persistence.dao.forum.ThreadDao;
+import io.sharpink.persistence.dao.story.StoryDao;
 import io.sharpink.persistence.dao.user.UserDao;
 import io.sharpink.persistence.entity.forum.Message;
 import io.sharpink.persistence.entity.forum.MessagesLoadingStrategy;
 import io.sharpink.persistence.entity.forum.Thread;
+import io.sharpink.persistence.entity.story.Story;
 import io.sharpink.rest.dto.request.forum.MessageRequest;
 import io.sharpink.rest.dto.request.forum.ThreadRequest;
 import io.sharpink.rest.dto.response.forum.ThreadResponse;
@@ -27,14 +29,16 @@ public class ForumService {
   private ThreadDao threadDao;
   private MessageDao messageDao;
   private UserDao userDao;
+  private StoryDao storyDao;
   private ThreadMapper threadMapper;
   private MessageMapper messageMapper;
 
   @Autowired
-  public ForumService(ThreadDao threadDao, MessageDao messageDao, UserDao userDao, ThreadMapper threadMapper, MessageMapper messageMapper) {
+  public ForumService(ThreadDao threadDao, MessageDao messageDao, UserDao userDao, StoryDao storyDao, ThreadMapper threadMapper, MessageMapper messageMapper) {
     this.threadDao = threadDao;
     this.messageDao = messageDao;
     this.userDao = userDao;
+    this.storyDao = storyDao;
     this.threadMapper = threadMapper;
     this.messageMapper = messageMapper;
   }
@@ -60,6 +64,13 @@ public class ForumService {
     thread.setCreationDate(LocalDateTime.now());
 
     thread = threadDao.save(thread);
+
+    if (threadRequest.getStoryId() != null) {
+      Story story = storyDao.findById(threadRequest.getStoryId()).get();
+      story.setThread(thread);
+      storyDao.save(story);
+    }
+
     return thread.getId();
   }
 
@@ -76,6 +87,8 @@ public class ForumService {
     if (isNotEmpty(messages)) {
       Collections.sort(messages, Collections.reverseOrder());
       message.setNumber(messages.get(0).getNumber() + 1);
+    } else {
+      message.setNumber(1);
     }
 
     message = messageDao.save(message);

@@ -28,14 +28,11 @@ public class StoryResponse {
   private Integer chaptersNumber;
   private UserResponse author; // peut être null
   private List<ChapterResponse> chapters; // peut être null
-
   @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
   private LocalDateTime creationDate;
-
   @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
   private LocalDateTime lastModificationDate;
-
   @JsonFormat(pattern = "yyyyMMdd HH:mm:ss")
   private LocalDateTime finalReleaseDate;
-
+  private Long threadId; // peut être null
 }

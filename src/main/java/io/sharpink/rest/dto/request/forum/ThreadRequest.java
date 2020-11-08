@@ -19,4 +19,6 @@ public class ThreadRequest {
   @NotNull
   private String title;
 
+  private Long storyId;
+
 }
