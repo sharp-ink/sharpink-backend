@@ -1,6 +1,5 @@
 package io.sharpink.service;
 
-import io.scaunois.common.util.date.DateUtil;
 import io.sharpink.mapper.story.ChapterMapper;
 import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.persistence.dao.story.ChapterDao;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,7 +109,8 @@ public class StoryService {
       throw new UnprocessableEntity422Exception(TITLE_ALREADY_USED);
     } else {
       Story story = storyMapper.toStory(storyRequest);
-      Date now = DateUtil.toDate(LocalDateTime.now());
+      story.setChaptersNumber(0);
+      LocalDateTime now = LocalDateTime.now();
       story.setCreationDate(now);
       story.setLastModificationDate(now);
       story = storyDao.save(story);
@@ -120,10 +119,10 @@ public class StoryService {
   }
 
   /**
-   * Met à jour une histoire.
+   * Update a story
    *
-   * @param id                L'id de l'histoire à mettre à jour.
-   * @param storyPatchRequest Les nouvelles informations (partielles) à ajouter à l'histoire.
+   * @param id                The id of the story to be updated
+   * @param storyPatchRequest New informations (partial) to add to the story
    */
   public StoryResponse updateStory(Long id, StoryPatchRequest storyPatchRequest) {
     Optional<Story> storyOptional = storyDao.findById(id);
@@ -161,6 +160,8 @@ public class StoryService {
       if (storyPatchRequest.getPublished() != null) {
         story.setPublished(storyPatchRequest.getPublished());
       }
+
+      story.setLastModificationDate(LocalDateTime.now());
 
       Story updatedStory = storyDao.save(story);
       return storyMapper.toStoryResponse(updatedStory, ChaptersLoadingStrategy.NONE);

@@ -8,7 +8,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static javax.persistence.EnumType.STRING;
@@ -18,7 +18,7 @@ import static javax.persistence.EnumType.STRING;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Story {
+public class Story implements Comparable<Story> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,16 +59,20 @@ public class Story {
   private List<Chapter> chapters;
 
   @Column(name = "CREATION_DATE", columnDefinition = "Date de création de l'histoire (avec h,m,s)")
-  private Date creationDate;
+  private LocalDateTime creationDate;
 
   @Column(name = "LAST_MODIFICATION_DATE", columnDefinition = "Date de dernière modification (publication de chapitres, modification du contenu d'un chapitre) (avec h,m,s)")
-  private Date lastModificationDate;
+  private LocalDateTime lastModificationDate;
 
   @Column(name = "FINAL_RELEASE_DATE", columnDefinition = "Date à laquelle l'histoire a officiellement été déclarée terminée par l'auteur (avec h,m,s)")
-  private Date finalReleaseDate;
+  private LocalDateTime finalReleaseDate;
 
   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "thread_id")
   private Thread thread;
 
+  @Override
+  public int compareTo(Story o) {
+    return this.lastModificationDate.compareTo(o.lastModificationDate);
+  }
 }

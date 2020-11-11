@@ -1,8 +1,11 @@
 package io.sharpink.service;
 
+import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.mapper.user.UserMapper;
 import io.sharpink.persistence.dao.user.UserDao;
+import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.StoriesLoadingStrategy;
+import io.sharpink.persistence.entity.story.Story;
 import io.sharpink.persistence.entity.user.User;
 import io.sharpink.persistence.entity.user.UserDetails;
 import io.sharpink.persistence.entity.user.UserPreferences;
@@ -21,25 +24,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_PATH;
 import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_WEB_URL;
+import static java.util.Comparator.reverseOrder;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class UserService {
 
   private UserDao userDao;
   private UserMapper userMapper;
-  private StoryService storyService;
+  private StoryMapper storyMapper;
   private PictureManagementService pictureManagementService;
 
   @Autowired
-  public UserService(UserDao userDao, UserMapper userMapper, StoryService storyService, PictureManagementService pictureManagementService) {
+  public UserService(UserDao userDao, UserMapper userMapper, StoryMapper storyMapper, PictureManagementService pictureManagementService) {
     this.userDao = userDao;
     this.userMapper = userMapper;
-    this.storyService = storyService;
+    this.storyMapper = storyMapper;
     this.pictureManagementService = pictureManagementService;
   }
 
@@ -61,7 +67,14 @@ public class UserService {
   }
 
   public List<StoryResponse> getStories(Long memberId) {
-    return storyService.getStories(memberId);
+    Optional<User> userOptional = userDao.findById(memberId);
+    if (userOptional.isPresent()) {
+      List<Story> stories = userOptional.get().getStories().stream().sorted(reverseOrder()).collect(toList());
+      Collections.sort(stories, Collections.reverseOrder());
+      return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.NONE);
+    } else {
+      throw new NotFound404Exception(MissingEntity.USER);
+    }
   }
 
   public UserResponse updateUserProfile(Long id, UserPatchRequest userPatchRequest) {

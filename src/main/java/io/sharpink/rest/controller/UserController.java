@@ -4,6 +4,7 @@ import io.sharpink.rest.dto.request.user.UserPatchRequest;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import io.sharpink.rest.dto.response.user.UserResponse;
 import io.sharpink.rest.dto.shared.user.preferences.UserPreferencesDto;
+import io.sharpink.rest.exception.MissingEntity;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class UserController {
 	@GetMapping("/{id}")
 	public UserResponse getUser(@PathVariable Long id) {
     Optional<UserResponse> optionalUserResponse = userService.getUser(id);
-    return optionalUserResponse.orElseThrow(NotFound404Exception::new);
+    return optionalUserResponse.orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
   }
 
   @GetMapping("/{id}/stories")

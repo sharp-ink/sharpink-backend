@@ -1,6 +1,5 @@
 package io.sharpink.mapper.story;
 
-import io.scaunois.common.util.date.DateUtil;
 import io.sharpink.mapper.user.UserMapper;
 import io.sharpink.persistence.dao.user.UserDao;
 import io.sharpink.persistence.entity.story.*;
@@ -40,9 +39,9 @@ public class StoryMapper {
       .originalStory(source.isOriginalStory())
       .authorId(source.getAuthor().getId())
       .author(userMapper.map(source.getAuthor(), StoriesLoadingStrategy.DISABLED)) // TODO : should we keep that ?
-      .creationDate(DateUtil.toLocalDateTime(source.getCreationDate()))
-      .lastModificationDate(DateUtil.toLocalDateTime(source.getLastModificationDate()))
-      .finalReleaseDate(DateUtil.toLocalDateTime(source.getFinalReleaseDate()))
+      .creationDate(source.getCreationDate())
+      .lastModificationDate(source.getLastModificationDate())
+      .finalReleaseDate(source.getFinalReleaseDate())
       .threadId(source.getThread() != null ? source.getThread().getId() : null)
 			.build();
 
@@ -73,7 +72,6 @@ public class StoryMapper {
 			.status(source.getStatus() != null ? StoryStatus.valueOf(source.getStatus()) : null)
 			.summary(source.getSummary())
 			.published(source.isPublished())
-			.chaptersNumber(source.getChaptersNumber() != null ? source.getChaptersNumber() : 0)
       .build();
 
 		target.setAuthor(userDao.findById(source.getAuthorId()).get());
