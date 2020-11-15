@@ -3,22 +3,21 @@ package io.sharpink.persistence.entity.story;
 /**
  * Cette Enum représente les différents états possibles pour une histoire
  * (terminée, en cours, en stand-by)
- *
  */
 public enum StoryStatus {
 
-	COMPLETE("COMPLETE"), // histoire terminée
-	PROGRESS("PROGRESS"), // en cours d'écriture
-	STAND_BY("STAND_BY"); // au point mort, mise de côté par son auteur
+  COMPLETE("COMPLETE"), // story is finished, last chapter has been released
+  PROGRESS("PROGRESS"), // author is writing it
+  STAND_BY("STAND_BY"); // author is taking a pause on this story, he's (temporarily) not writing it anymore
 
-	private String value;
+  private String value;
 
-	StoryStatus(String value) {
-		this.value = value;
-	}
+  StoryStatus(String value) {
+    this.value = value;
+  }
 
-	public String getValue() {
-		return value;
-	}
+  public String getValue() {
+    return value;
+  }
 
 }

@@ -135,6 +135,10 @@ public class StoryService {
 
       story.setOriginalStory(storyPatchRequest.isOriginalStory()); // will not very likely change but it is allowed
 
+      if (storyPatchRequest.getStatus() != null) {
+        story.setStatus(storyPatchRequest.getStatus());
+      }
+
       if (storyPatchRequest.getType() != null) {
         story.setType(storyPatchRequest.getType());
       }

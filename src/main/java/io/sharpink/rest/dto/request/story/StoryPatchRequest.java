@@ -1,5 +1,6 @@
 package io.sharpink.rest.dto.request.story;
 
+import io.sharpink.persistence.entity.story.StoryStatus;
 import io.sharpink.persistence.entity.story.StoryType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class StoryPatchRequest {
   private String title;
   private boolean originalStory;
+  private StoryStatus status;
   private StoryType type;
   private String summary;
   private String thumbnail;
