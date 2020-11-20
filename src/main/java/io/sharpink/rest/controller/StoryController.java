@@ -1,22 +1,21 @@
 package io.sharpink.rest.controller;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.validation.Valid;
-
 import io.sharpink.rest.dto.request.story.ChapterRequest;
 import io.sharpink.rest.dto.request.story.StoryPatchRequest;
 import io.sharpink.rest.dto.request.story.StoryRequest;
 import io.sharpink.rest.dto.response.story.ChapterResponse;
 import io.sharpink.rest.dto.response.story.StoryResponse;
-import io.sharpink.rest.exception.*;
+import io.sharpink.rest.exception.CustomApiError;
+import io.sharpink.rest.exception.NotFound404Exception;
+import io.sharpink.rest.exception.UnprocessableEntity422Exception;
+import io.sharpink.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.sharpink.service.StoryService;
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -62,7 +61,7 @@ public class StoryController {
       Long storyId = storyService.createStory(storyRequest);
       return new ResponseEntity<>(storyId, CREATED);
     } catch (UnprocessableEntity422Exception e) {
-      return new ResponseEntity<>(new CustomApiError(e.getReason().name()), UNPROCESSABLE_ENTITY);
+      return new ResponseEntity<>(new CustomApiError(e.getReason().name(), e.getMessage()), UNPROCESSABLE_ENTITY);
     }
   }
 

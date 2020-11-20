@@ -4,14 +4,15 @@ import io.sharpink.rest.dto.request.user.UserPatchRequest;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import io.sharpink.rest.dto.response.user.UserResponse;
 import io.sharpink.rest.dto.shared.user.preferences.UserPreferencesDto;
-import io.sharpink.rest.exception.MissingEntity;
+import io.sharpink.rest.exception.CustomApiError;
 import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -29,10 +30,14 @@ public class UserController {
 		return userService.getAllUsers();
 	}
 
-	@GetMapping("/{id}")
-	public UserResponse getUser(@PathVariable Long id) {
-    Optional<UserResponse> optionalUserResponse = userService.getUser(id);
-    return optionalUserResponse.orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
+  @GetMapping("/{id}")
+  public ResponseEntity<?> getUser(@PathVariable Long id) {
+    try {
+      UserResponse user = userService.getUser(id);
+      return new ResponseEntity<>(user, HttpStatus.OK);
+    } catch (NotFound404Exception e) {
+      return new ResponseEntity<>(new CustomApiError(e.getReason().toString(), e.getMessage()), HttpStatus.NOT_FOUND);
+    }
   }
 
   @GetMapping("/{id}/stories")

@@ -11,6 +11,7 @@ public class UserMockUtil {
       .id(1L)
       .nickname("Batman")
       .email("dark-knight@gotham.com")
+      // TODO set more fields if needed
       .build();
   }
 

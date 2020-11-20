@@ -1,6 +1,9 @@
 package io.sharpink.rest.exception;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /*
  * Représente une erreur renvoyée au frontend
@@ -8,6 +11,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class CustomApiError {
   private String code;
   private String message;

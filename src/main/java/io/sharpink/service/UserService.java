@@ -54,14 +54,14 @@ public class UserService {
     return userMapper.map(users, StoriesLoadingStrategy.DISABLED);
   }
 
-  public Optional<UserResponse> getUser(Long id) {
+  public UserResponse getUser(Long id) {
 
     Optional<User> userOptional = userDao.findById(id);
 
     if (userOptional.isPresent()) {
-      return Optional.of(userMapper.map(userOptional.get(), StoriesLoadingStrategy.DISABLED));
+      return userMapper.map(userOptional.get(), StoriesLoadingStrategy.DISABLED);
     } else {
-      return Optional.empty();
+      throw new NotFound404Exception(MissingEntity.USER, "User not found for id=" + id);
     }
 
   }
