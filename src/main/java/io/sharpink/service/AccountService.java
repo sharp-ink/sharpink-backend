@@ -26,8 +26,8 @@ public class AccountService {
 
 		Optional<User> optionalUser = userDao.findByCredentials(login, password);
 		if (optionalUser.isPresent()) {
-			return Optional.of(userMapper.map(optionalUser.get(), StoriesLoadingStrategy.DISABLED));
-		} else {
+      return Optional.of(userMapper.toUserResponse(optionalUser.get(), StoriesLoadingStrategy.DISABLED));
+    } else {
 			return Optional.empty();
 		}
 

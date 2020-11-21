@@ -4,6 +4,7 @@ import io.sharpink.mapper.story.ChapterMapper;
 import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.persistence.dao.story.ChapterDao;
 import io.sharpink.persistence.dao.story.StoryDao;
+import io.sharpink.persistence.dao.user.UserDao;
 import io.sharpink.persistence.entity.story.Chapter;
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.Story;
@@ -17,7 +18,6 @@ import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.rest.exception.UnprocessableEntity422Exception;
 import io.sharpink.service.picture.PictureManagementService;
 import io.sharpink.util.picture.PictureUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +31,12 @@ import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_WEB_URL;
 import static io.sharpink.rest.exception.MissingEntity.CHAPTER;
 import static io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum.TITLE_ALREADY_USED;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Service
 public class StoryService {
 
+  private UserDao userDao;
   private StoryDao storyDao;
   private ChapterDao chapterDao;
   private StoryMapper storyMapper;
@@ -42,7 +44,8 @@ public class StoryService {
   private PictureManagementService pictureManagementService;
 
   @Autowired
-  public StoryService(StoryDao storyDao, ChapterDao chapterDao, StoryMapper storyMapper, ChapterMapper chapterMapper, PictureManagementService pictureManagementService) {
+  public StoryService(UserDao userDao, StoryDao storyDao, ChapterDao chapterDao, StoryMapper storyMapper, ChapterMapper chapterMapper, PictureManagementService pictureManagementService) {
+    this.userDao = userDao;
     this.storyDao = storyDao;
     this.chapterDao = chapterDao;
     this.storyMapper = storyMapper;
@@ -61,7 +64,7 @@ public class StoryService {
     List<Story> stories = ((List<Story>) storyDao.findAll())
       .stream()
       .filter(story -> story.getChaptersNumber() != 0) // keep stories having at least 1 chapter
-      .filter(story -> story.isPublished() == published.booleanValue() || published == null) // keep only if given published status (or no published status specified)
+      .filter(story -> published == null || story.isPublished() == published.booleanValue()) // keep only if given published status (or no published status specified)
       .collect(toList());
 
     return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.ONLY_FIRST); // load only the first chapter (useful for preview)
@@ -109,10 +112,13 @@ public class StoryService {
       throw new UnprocessableEntity422Exception(TITLE_ALREADY_USED);
     } else {
       Story story = storyMapper.toStory(storyRequest);
+
+      story.setAuthor(userDao.findById(storyRequest.getAuthorId()).get());
       story.setChaptersNumber(0);
       LocalDateTime now = LocalDateTime.now();
       story.setCreationDate(now);
       story.setLastModificationDate(now);
+
       story = storyDao.save(story);
       return story.getId(); // returns id of newly created entity
     }
@@ -129,7 +135,7 @@ public class StoryService {
     if (storyOptional.isPresent()) {
       Story story = storyOptional.get();
 
-      if (StringUtils.isNotEmpty(storyPatchRequest.getTitle())) {
+      if (isNotEmpty(storyPatchRequest.getTitle())) {
         story.setTitle(storyPatchRequest.getTitle());
       }
 
@@ -147,13 +153,15 @@ public class StoryService {
         story.setSummary(storyPatchRequest.getSummary());
       }
 
-      if (StringUtils.isNotEmpty(storyPatchRequest.getThumbnail())) {
+      if (isNotEmpty(storyPatchRequest.getThumbnail())) {
         String formImageData = storyPatchRequest.getThumbnail();
         String extension = PictureUtil.extractExtension(formImageData);
-        String storyThumbnailWebUrl = USERS_PROFILE_PICTURES_WEB_URL + '/' + story.getAuthor().getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
+        String storyThumbnailWebUrl = USERS_PROFILE_PICTURES_WEB_URL + '/' + story.getAuthor()
+          .getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
         story.setThumbnail(storyThumbnailWebUrl);
         try {
-          String storyThumbnailFSPath = USERS_PROFILE_PICTURES_PATH + '/' + story.getAuthor().getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
+          String storyThumbnailFSPath = USERS_PROFILE_PICTURES_PATH + '/' + story.getAuthor()
+            .getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
           pictureManagementService.storePictureOnFileSystem(formImageData, storyThumbnailFSPath);
         } catch (IOException e) {
           e.printStackTrace(); // TODO: use a logger instead

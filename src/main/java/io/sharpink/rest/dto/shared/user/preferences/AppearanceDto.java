@@ -1,11 +1,12 @@
 package io.sharpink.rest.dto.shared.user.preferences;
 
 import io.sharpink.persistence.entity.user.preferences.Theme;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AppearanceDto {
   private Theme theme;
   @Getter(AccessLevel.NONE)

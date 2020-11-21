@@ -110,10 +110,10 @@ class UserControllerTest {
 
     // given
     // a mock list with a random size of 0 to 4 items
-    List<StoryResponse> storiesListMock = IntStream.range(0, RandomUtils.nextInt(0, 5))
+    List<StoryResponse> storyListMock = IntStream.range(0, RandomUtils.nextInt(0, 5))
       .mapToObj(i -> new StoryResponse())
       .collect(Collectors.toList());
-    when(userServiceMock.getStories(anyLong())).thenReturn(storiesListMock);
+    when(userServiceMock.getStories(anyLong())).thenReturn(storyListMock);
 
     // when
     Long id = RandomUtils.nextLong();
@@ -123,7 +123,7 @@ class UserControllerTest {
     ArgumentCaptor<Long> idArgumentCaptor = ArgumentCaptor.forClass(Long.class);
     verify(userServiceMock).getStories(idArgumentCaptor.capture());
     assertEquals(id, idArgumentCaptor.getValue());
-    assertThat(stories).isEqualTo(storiesListMock);
+    assertThat(stories).isEqualTo(storyListMock);
   }
 
   @Test

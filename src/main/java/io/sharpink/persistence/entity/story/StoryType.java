@@ -14,13 +14,13 @@ public enum StoryType {
   ROMANCE("ROMANCE"),
   UNDETERMINED("UNDETERMINED");
 
-	private String value;
+  private String value;
 
-	StoryType(String value) {
-		this.value = value;
-	}
+  StoryType(String value) {
+    this.value = value;
+  }
 
-	public String getValue() {
-		return value;
-	}
+  public String value() {
+    return value;
+  }
 }

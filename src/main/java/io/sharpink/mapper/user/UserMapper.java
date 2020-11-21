@@ -13,7 +13,6 @@ import io.sharpink.rest.dto.shared.user.preferences.UserPreferencesDto;
 import io.sharpink.util.json.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class UserMapper {
   private StoryMapper storyMapper;
 
   @Autowired
-  public UserMapper(@Lazy StoryMapper storyMapper) {
+  public UserMapper(StoryMapper storyMapper) {
     this.storyMapper = storyMapper;
   }
 
@@ -44,13 +43,13 @@ public class UserMapper {
    *                               d'histoires qui, lui, est toujours chargé)
    * @return Un {@code User}
    */
-  public UserResponse map(User source, StoriesLoadingStrategy storiesLoadingStrategy) {
+  public UserResponse toUserResponse(User source, StoriesLoadingStrategy storiesLoadingStrategy) {
     UserResponse target = UserResponse.builder()
       .id(source.getId())
       .nickname(source.getNickname())
       .email(source.getEmail())
       .storiesCount(source.getStoriesCount())
-      .userDetails(source.getUserDetails().isPresent() ? map(source.getUserDetails().get()) : null)
+      .userDetails(source.getUserDetails().isPresent() ? toUserDetailsResponse(source.getUserDetails().get()) : null)
       .build();
 
     // on ne charge les histoires que si demandé
@@ -77,15 +76,15 @@ public class UserMapper {
    *                               d'histoires qui, lui, est toujours chargé)
    * @return Une {@code List<UserResponse>}
    */
-  public List<UserResponse> map(List<User> source, StoriesLoadingStrategy storiesLoadingStrategy) {
+  public List<UserResponse> toUserResponseList(List<User> source, StoriesLoadingStrategy storiesLoadingStrategy) {
     List<UserResponse> target = new ArrayList<>();
     for (User user : source) {
-      target.add(map(user, storiesLoadingStrategy));
+      target.add(toUserResponse(user, storiesLoadingStrategy));
     }
     return target;
   }
 
-  public UserDetails map(UserPatchRequest userPatchRequest) {
+  public UserDetails toUserDetails(UserPatchRequest userPatchRequest) {
     return UserDetails.builder()
       .firstName(userPatchRequest.getFirstName())
       .lastName(userPatchRequest.getLastName())
@@ -93,14 +92,14 @@ public class UserMapper {
       .build();
   }
 
-  public UserPreferencesDto map(UserPreferences source) {
+  public UserPreferencesDto toUserPreferencesDto(UserPreferences source) {
     if (StringUtils.isEmpty(source.getPreferences())) {
       return new UserPreferencesDto();
     }
     return JsonUtil.fromJson(source.getPreferences(), UserPreferencesDto.class);
   }
 
-  private UserDetailsResponse map(UserDetails source) {
+  private UserDetailsResponse toUserDetailsResponse(UserDetails source) {
     return UserDetailsResponse.builder()
       .firstName(source.getFirstName())
       .lastName(source.getLastName())

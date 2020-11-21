@@ -20,5 +20,5 @@ public class UserPreferences {
   @ToString.Exclude
   protected User user;
 
-  protected String preferences;
+  protected String preferences; // JSON representation of the preferences
 }

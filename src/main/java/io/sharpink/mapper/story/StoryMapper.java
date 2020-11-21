@@ -1,8 +1,9 @@
 package io.sharpink.mapper.story;
 
-import io.sharpink.mapper.user.UserMapper;
-import io.sharpink.persistence.dao.user.UserDao;
-import io.sharpink.persistence.entity.story.*;
+import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
+import io.sharpink.persistence.entity.story.Story;
+import io.sharpink.persistence.entity.story.StoryStatus;
+import io.sharpink.persistence.entity.story.StoryType;
 import io.sharpink.rest.dto.request.story.StoryRequest;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,30 +16,25 @@ import java.util.List;
 @Component
 public class StoryMapper {
 
-	private final UserMapper userMapper;
-	private final ChapterMapper chapterMapper;
-	private final UserDao userDao;
+  private final ChapterMapper chapterMapper;
 
-	@Autowired
-  public StoryMapper(UserMapper userMapper, ChapterMapper chapterMapper, UserDao userDao) {
-    this.userMapper = userMapper;
+  @Autowired
+  public StoryMapper(ChapterMapper chapterMapper) {
     this.chapterMapper = chapterMapper;
-    this.userDao = userDao;
   }
 
   public StoryResponse toStoryResponse(Story source, ChaptersLoadingStrategy chaptersLoadingStrategy) {
-		StoryResponse target = StoryResponse.builder()
+    StoryResponse target = StoryResponse.builder()
       .id(source.getId())
       .title(source.getTitle())
-      .type(source.getType().getValue())
-      .status(source.getStatus().getValue())
+      .type(source.getType().value())
+      .status(source.getStatus().value())
       .summary(source.getSummary())
       .thumbnail(source.getThumbnail())
       .published(source.isPublished())
       .chaptersNumber(source.getChaptersNumber())
       .originalStory(source.isOriginalStory())
       .authorId(source.getAuthor().getId())
-      .author(userMapper.map(source.getAuthor(), StoriesLoadingStrategy.DISABLED)) // TODO : should we keep that ?
       .creationDate(source.getCreationDate())
       .lastModificationDate(source.getLastModificationDate())
       .finalReleaseDate(source.getFinalReleaseDate())
@@ -65,17 +61,13 @@ public class StoryMapper {
 	}
 
 	public Story toStory(StoryRequest source) {
-    Story target = Story.builder()
-			.title(source.getTitle())
-			.type(source.getType() != null ? StoryType.valueOf(source.getType()) : StoryType.UNDETERMINED)
-			.originalStory(source.isOriginalStory())
-			.status(source.getStatus() != null ? StoryStatus.valueOf(source.getStatus()) : null)
-			.summary(source.getSummary())
-			.published(source.isPublished())
+    return Story.builder()
+      .title(source.getTitle())
+      .type(source.getType() != null ? StoryType.valueOf(source.getType()) : StoryType.UNDETERMINED)
+      .originalStory(source.isOriginalStory())
+      .status(source.getStatus() != null ? StoryStatus.valueOf(source.getStatus()) : null)
+      .summary(source.getSummary())
+      .published(source.isPublished())
       .build();
-
-		target.setAuthor(userDao.findById(source.getAuthorId()).get());
-
-		return target;
 	}
 }

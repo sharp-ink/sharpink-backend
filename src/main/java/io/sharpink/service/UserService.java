@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +31,7 @@ import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_PATH;
 import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_WEB_URL;
 import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.util.Strings.isNotEmpty;
 
 @Service
 public class UserService {
@@ -51,7 +51,7 @@ public class UserService {
 
   public List<UserResponse> getAllUsers() {
     List<User> users = (List<User>) userDao.findAll();
-    return userMapper.map(users, StoriesLoadingStrategy.DISABLED);
+    return userMapper.toUserResponseList(users, StoriesLoadingStrategy.DISABLED);
   }
 
   public UserResponse getUser(Long id) {
@@ -59,34 +59,41 @@ public class UserService {
     Optional<User> userOptional = userDao.findById(id);
 
     if (userOptional.isPresent()) {
-      return userMapper.map(userOptional.get(), StoriesLoadingStrategy.DISABLED);
+      return userMapper.toUserResponse(userOptional.get(), StoriesLoadingStrategy.DISABLED);
     } else {
       throw new NotFound404Exception(MissingEntity.USER, "User not found for id=" + id);
     }
 
   }
 
-  public List<StoryResponse> getStories(Long memberId) {
-    Optional<User> userOptional = userDao.findById(memberId);
+  public List<StoryResponse> getStories(Long userId) {
+    Optional<User> userOptional = userDao.findById(userId);
     if (userOptional.isPresent()) {
       List<Story> stories = userOptional.get().getStories().stream().sorted(reverseOrder()).collect(toList());
-      Collections.sort(stories, Collections.reverseOrder());
       return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.NONE);
     } else {
-      throw new NotFound404Exception(MissingEntity.USER);
+      throw new NotFound404Exception(MissingEntity.USER, "User not found for id=" + userId);
     }
   }
 
-  public UserResponse updateUserProfile(Long id, UserPatchRequest userPatchRequest) {
-    User user = userDao.findById(id).orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
+  public UserResponse updateUserProfile(Long userId, UserPatchRequest userPatchRequest) {
+    User user = userDao.findById(userId)
+      .orElseThrow(() -> new NotFound404Exception(MissingEntity.USER, "User not found for id=" + userId));
 
     // update profile informations
-    user.setNickname(userPatchRequest.getNickname());
-    user.setEmail(userPatchRequest.getEmail());
-    UserDetails newUserDetails = userMapper.map(userPatchRequest);
+
+    if (isNotEmpty(userPatchRequest.getNickname())) {
+      user.setNickname(userPatchRequest.getNickname());
+    }
+
+    if (isNotEmpty(userPatchRequest.getEmail())) {
+      user.setEmail(userPatchRequest.getEmail());
+    }
+
+    UserDetails newUserDetails = userMapper.toUserDetails(userPatchRequest);
 
     // update profile picture (if any) and store it on the file system
-    if (!userPatchRequest.getProfilePicture().isEmpty()) {
+    if (isNotEmpty(userPatchRequest.getProfilePicture())) {
       String nickname = user.getNickname();
       String extension = PictureUtil.extractExtension(userPatchRequest.getProfilePicture());
       String profilePictureWebUrl = USERS_PROFILE_PICTURES_WEB_URL + '/' + nickname + '/' + nickname + '.' + extension;
@@ -96,7 +103,6 @@ public class UserService {
         String profilePictureFSPath = USERS_PROFILE_PICTURES_PATH + '/' + nickname + '/' + nickname + '.' + extension;
         pictureManagementService.storePictureOnFileSystem(profilePictureBase64Content, profilePictureFSPath);
       } catch (IOException e) {
-        e.printStackTrace(); // TODO: use a logger instead
         throw new InternalError500Exception(e);
       }
     } else if (user.getUserDetails().isPresent() && user.getUserDetails().get().getProfilePicture() != null) {
@@ -109,20 +115,22 @@ public class UserService {
     newUserDetails.setUser(user);
     userDao.save(user);
 
-    return userMapper.map(user, StoriesLoadingStrategy.DISABLED);
+    return userMapper.toUserResponse(user, StoriesLoadingStrategy.DISABLED);
   }
 
-  public UserPreferencesDto getPreferences(Long id) {
-    User user = userDao.findById(id).orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
+  public UserPreferencesDto getPreferences(Long userId) {
+    User user = userDao.findById(userId)
+      .orElseThrow(() -> new NotFound404Exception(MissingEntity.USER, "User not found for id=" + userId));
     if (user.getUserPreferences().isPresent()) {
-      return userMapper.map(user.getUserPreferences().get());
+      return userMapper.toUserPreferencesDto(user.getUserPreferences().get());
     } else {
       return new UserPreferencesDto();
     }
   }
 
-  public UserPreferencesDto updateUserPreferences(Long id, UserPreferencesDto userPreferencesDto) {
-    User user = userDao.findById(id).orElseThrow(() -> new NotFound404Exception(MissingEntity.USER));
+  public UserPreferencesDto updateUserPreferences(Long userId, UserPreferencesDto userPreferencesDto) {
+    User user = userDao.findById(userId)
+      .orElseThrow(() -> new NotFound404Exception(MissingEntity.USER, "User not found for id=" + userId));
     UserPreferences userPreferences = user.getUserPreferences().orElseGet(UserPreferences::new);
     UserPreferencesDto currentUserPreferencesDto = StringUtils.isEmpty(userPreferences.getPreferences()) ?
       new UserPreferencesDto() :
@@ -134,6 +142,6 @@ public class UserService {
 
     userPreferences.setPreferences(JsonUtil.toJson(currentUserPreferencesDto));
     userDao.save(user);
-    return userMapper.map(userPreferences);
+    return userMapper.toUserPreferencesDto(userPreferences);
   }
 }

@@ -15,4 +15,5 @@ public class UserPatchRequest {
   private String firstName;
   private String lastName;
   private String profilePicture; // base64 profile picture
+  // TODO add other fields
 }

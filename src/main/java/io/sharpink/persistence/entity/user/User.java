@@ -13,6 +13,8 @@ import java.util.Optional;
 @Table(name = "USER")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
   @Id

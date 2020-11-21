@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +33,7 @@ public class StoryController {
    * Gets all {@code Story}.
    */
   @GetMapping("")
-  public List<StoryResponse> getStories(@RequestParam Boolean published) {
+  public List<StoryResponse> getStories(@RequestParam(required = false) Boolean published) {
     return storyService.getAllStories(published);
   }
 
@@ -56,7 +55,7 @@ public class StoryController {
    * lors de l'insertion en base de données.
    */
   @PostMapping("")
-  public ResponseEntity<?> createStory(@RequestBody @Valid StoryRequest storyRequest) {
+  public ResponseEntity<?> createStory(@RequestBody StoryRequest storyRequest) {
     try {
       Long storyId = storyService.createStory(storyRequest);
       return new ResponseEntity<>(storyId, CREATED);
@@ -66,7 +65,7 @@ public class StoryController {
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<?> updateStory(@PathVariable Long id, @RequestBody @Valid StoryPatchRequest storyPatchRequest) {
+  public ResponseEntity<?> updateStory(@PathVariable Long id, @RequestBody StoryPatchRequest storyPatchRequest) {
     try {
       StoryResponse storyResponse = storyService.updateStory(id, storyPatchRequest);
       return new ResponseEntity<>(storyResponse, OK);
@@ -85,7 +84,7 @@ public class StoryController {
    * Creates a new chapter in the given story
    */
   @PostMapping("/{storyId}/chapters")
-  public ResponseEntity<?> addChapter(@PathVariable Long storyId, @RequestBody @Valid ChapterRequest chapterRequest) {
+  public ResponseEntity<?> addChapter(@PathVariable Long storyId, @RequestBody ChapterRequest chapterRequest) {
     try {
       long chapterId = storyService.addChapter(storyId, chapterRequest);
       return new ResponseEntity<>(chapterId, CREATED);
@@ -98,7 +97,7 @@ public class StoryController {
    * Updates an existing chapter
    */
   @PutMapping("/{storyId}/chapters/{chapterPosition}")
-  public ResponseEntity<?> updateChapter(@PathVariable Long storyId, @PathVariable Long chapterPosition, @RequestBody @Valid ChapterRequest chapterRequest) {
+  public ResponseEntity<?> updateChapter(@PathVariable Long storyId, @PathVariable Long chapterPosition, @RequestBody ChapterRequest chapterRequest) {
     try {
       ChapterResponse chapterResponse = storyService.updateChapter(storyId, chapterPosition.intValue(), chapterRequest);
       return new ResponseEntity<>(chapterResponse, OK);
