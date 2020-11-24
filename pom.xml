@@ -75,8 +75,11 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- JUnit 5 -->
-
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 
@@ -95,6 +98,7 @@
         </configuration>
       </plugin>
       <!-- Makes Pitest working with JUnit 5 -->
+      <!-- run with mvn org.pitest:pitest-maven:mutationCoverage -->
       <plugin>
         <groupId>org.pitest</groupId>
         <artifactId>pitest-maven</artifactId>
@@ -102,7 +106,6 @@
         <executions>
           <execution>
             <id>pit-report</id>
-            <phase>test</phase>
             <goals>
               <goal>mutationCoverage</goal>
             </goals>

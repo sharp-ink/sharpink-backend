@@ -24,30 +24,30 @@ public class Story implements Comparable<Story> {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "TITLE", columnDefinition = "Titre de l'histoire")
+  @Column(name = "TITLE")
   private String title;
 
-  @Column(columnDefinition = "Genre de l'histoire")
+  @Column
   @Enumerated(STRING)
   private StoryType type;
 
-  @Column(name = "ORIGINAL_STORY", columnDefinition = "true = c'est une histoire originale, false = c'est une fan-fiction")
+  @Column(name = "ORIGINAL_STORY")
   private boolean originalStory;
 
-  @Column(columnDefinition = "Statut actuel de l'histoire")
+  @Column
   @Enumerated(STRING)
   private StoryStatus status;
 
-  @Column(columnDefinition = "Résumé de l'histoire")
+  @Column
   private String summary;
 
-  @Column(columnDefinition = "Vignette de l'histoire (URL du fichier)")
+  @Column
   private String thumbnail;
 
-  @Column(columnDefinition = "true = l'histoire est publiée et visible par tout le monde, false = seul l'auteur la voit")
+  @Column
   private boolean published;
 
-  @Column(name = "CHAPTERS_NUMBER", columnDefinition = "Nombre de chapitres de l'histoire")
+  @Column(name = "CHAPTERS_NUMBER")
   private Integer chaptersNumber;
 
   @ManyToOne
@@ -58,13 +58,13 @@ public class Story implements Comparable<Story> {
   @LazyCollection(LazyCollectionOption.TRUE)
   private List<Chapter> chapters;
 
-  @Column(name = "CREATION_DATE", columnDefinition = "Date de création de l'histoire (avec h,m,s)")
+  @Column(name = "CREATION_DATE")
   private LocalDateTime creationDate;
 
-  @Column(name = "LAST_MODIFICATION_DATE", columnDefinition = "Date de dernière modification (publication de chapitres, modification du contenu d'un chapitre) (avec h,m,s)")
+  @Column(name = "LAST_MODIFICATION_DATE")
   private LocalDateTime lastModificationDate;
 
-  @Column(name = "FINAL_RELEASE_DATE", columnDefinition = "Date à laquelle l'histoire a officiellement été déclarée terminée par l'auteur (avec h,m,s)")
+  @Column(name = "FINAL_RELEASE_DATE")
   private LocalDateTime finalReleaseDate;
 
   @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

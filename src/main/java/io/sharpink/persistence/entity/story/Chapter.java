@@ -1,16 +1,10 @@
 package io.sharpink.persistence.entity.story;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "STORY_CHAPTER")
@@ -18,25 +12,25 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Chapter implements Comparable<Chapter> {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@ManyToOne
+  @ManyToOne
   @ToString.Exclude
-	private Story story;
+  private Story story;
 
-	@Column(name = "POSITION", columnDefinition = "Numéro du chapitre (commence à 1)")
-	private Integer position;
+  @Column(name = "POSITION")
+  private Integer position;
 
-	@Column(name = "TITLE", columnDefinition = "Titre du chapitre (optionnel)")
-	private String title;
+  @Column(name = "TITLE")
+  private String title;
 
-	@Column(name = "CONTENT", columnDefinition = "Le texte du chapitre, en une seule chaîne de caractères")
-	private String content;
+  @Column(name = "CONTENT")
+  private String content;
 
-	@Override
-	public int compareTo(Chapter o) {
-		return position.compareTo(o.position);
-	}
+  @Override
+  public int compareTo(Chapter o) {
+    return position.compareTo(o.position);
+  }
 }
