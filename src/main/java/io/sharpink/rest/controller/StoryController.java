@@ -3,6 +3,7 @@ package io.sharpink.rest.controller;
 import io.sharpink.rest.dto.request.story.ChapterRequest;
 import io.sharpink.rest.dto.request.story.StoryPatchRequest;
 import io.sharpink.rest.dto.request.story.StoryRequest;
+import io.sharpink.rest.dto.request.story.search.StorySearch;
 import io.sharpink.rest.dto.response.story.ChapterResponse;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import io.sharpink.rest.exception.CustomApiError;
@@ -11,12 +12,25 @@ import io.sharpink.rest.exception.UnprocessableEntity422Exception;
 import io.sharpink.service.StoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @RestController
 @RequestMapping("/stories")
@@ -30,7 +44,7 @@ public class StoryController {
   }
 
   /**
-   * Gets all {@code Story}.
+   * Gets all {@code Story} with given publication status.
    */
   @GetMapping("")
   public List<StoryResponse> getStories(@RequestParam(required = false) Boolean published) {
@@ -62,6 +76,11 @@ public class StoryController {
     } catch (UnprocessableEntity422Exception e) {
       return new ResponseEntity<>(new CustomApiError(e.getReason().name(), e.getMessage()), UNPROCESSABLE_ENTITY);
     }
+  }
+
+  @PostMapping("/search")
+  public List<StoryResponse> search(@RequestBody StorySearch storySearch) {
+    return storyService.searchStories(storySearch);
   }
 
   @PatchMapping("/{id}")

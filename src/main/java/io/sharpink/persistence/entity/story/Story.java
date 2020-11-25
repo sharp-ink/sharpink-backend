@@ -3,11 +3,27 @@ package io.sharpink.persistence.entity.story;
 
 import io.sharpink.persistence.entity.forum.Thread;
 import io.sharpink.persistence.entity.user.User;
-import lombok.*;
+import io.sharpink.shared.story.StoryStatus;
+import io.sharpink.shared.story.StoryType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -47,8 +63,7 @@ public class Story implements Comparable<Story> {
   @Column
   private boolean published;
 
-  @Column(name = "CHAPTERS_NUMBER")
-  private Integer chaptersNumber;
+  @Column(name = "CHAPTERS_NUMBER") private int chaptersNumber;
 
   @ManyToOne
   @ToString.Exclude
