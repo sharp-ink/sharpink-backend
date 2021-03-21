@@ -18,7 +18,7 @@
   <description>SharpInk - Backend</description>
 
   <properties>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
     <!-- Versions des dépendances -->
     <io.scaunois.common-util.version>1.0.0-SNAPSHOT</io.scaunois.common-util.version>
   </properties>
@@ -105,10 +105,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
       </plugin>
       <!-- Makes Pitest working with JUnit 5 -->
       <!-- run with mvn org.pitest:pitest-maven:mutationCoverage -->
