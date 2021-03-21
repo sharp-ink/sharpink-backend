@@ -2,6 +2,7 @@ package io.sharpink;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -43,9 +44,9 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
     MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-    converter.setObjectMapper(new ObjectMapper()
-      .findAndRegisterModules()
-      .setSerializationInclusion(JsonInclude.Include.NON_NULL));
+    converter.setObjectMapper(new ObjectMapper().findAndRegisterModules()
+      .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS));
     converters.add(converter);
   }
 }
