@@ -1,5 +1,6 @@
 package io.sharpink.rest.controller;
 
+import io.sharpink.persistence.entity.story.AuthorLoadingStrategy;
 import io.sharpink.rest.dto.request.story.ChapterRequest;
 import io.sharpink.rest.dto.request.story.StoryPatchRequest;
 import io.sharpink.rest.dto.request.story.StoryRequest;
@@ -36,7 +37,7 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 @RequestMapping("/stories")
 public class StoryController {
 
-  private StoryService storyService;
+  private final StoryService storyService;
 
   @Autowired
   public StoryController(StoryService storyService) {
@@ -48,7 +49,7 @@ public class StoryController {
    */
   @GetMapping("")
   public List<StoryResponse> getStories(@RequestParam(required = false) Boolean published) {
-    return storyService.getAllStories(published);
+    return storyService.getAllStories(published, AuthorLoadingStrategy.ENABLED);
   }
 
   /**
@@ -80,7 +81,7 @@ public class StoryController {
 
   @PostMapping("/search")
   public List<StoryResponse> search(@RequestBody StorySearch storySearch) {
-    return storyService.searchStories(storySearch);
+    return storyService.searchStories(storySearch, AuthorLoadingStrategy.ENABLED);
   }
 
   @PatchMapping("/{id}")

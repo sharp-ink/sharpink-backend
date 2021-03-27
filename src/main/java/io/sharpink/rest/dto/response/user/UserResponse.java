@@ -17,7 +17,6 @@ public class UserResponse {
   protected Long id;
 
   // Informations principales, obligatoires
-
   protected String nickname;
   protected String email;
   protected Long storiesCount;

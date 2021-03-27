@@ -2,7 +2,7 @@ package io.sharpink.mapper.user;
 
 import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
-import io.sharpink.persistence.entity.story.StoriesLoadingStrategy;
+import io.sharpink.persistence.entity.user.StoriesLoadingStrategy;
 import io.sharpink.persistence.entity.user.User;
 import io.sharpink.persistence.entity.user.UserDetails;
 import io.sharpink.persistence.entity.user.UserPreferences;
@@ -21,7 +21,7 @@ import java.util.List;
 @Component
 public class UserMapper {
 
-  private StoryMapper storyMapper;
+  private final StoryMapper storyMapper;
 
   @Autowired
   public UserMapper(StoryMapper storyMapper) {

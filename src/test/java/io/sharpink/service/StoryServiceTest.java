@@ -3,9 +3,11 @@ package io.sharpink.service;
 import io.sharpink.UserMockUtil;
 import io.sharpink.mapper.story.ChapterMapper;
 import io.sharpink.mapper.story.StoryMapper;
+import io.sharpink.mapper.user.UserMapper;
 import io.sharpink.persistence.dao.story.ChapterDao;
 import io.sharpink.persistence.dao.story.StoryDao;
 import io.sharpink.persistence.dao.user.UserDao;
+import io.sharpink.persistence.entity.story.AuthorLoadingStrategy;
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.Story;
 import io.sharpink.persistence.entity.user.User;
@@ -16,11 +18,11 @@ import io.sharpink.rest.dto.request.story.search.StorySearch;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import io.sharpink.service.picture.PictureManagementService;
 import io.sharpink.shared.SortType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -45,11 +47,15 @@ class StoryServiceTest {
   @Mock ChapterDao chapterDaoMock;
   ChapterMapper chapterMapper = new ChapterMapper();
   StoryMapper storyMapper = new StoryMapper(chapterMapper);
+  UserMapper userMapper = new UserMapper(storyMapper);
   @Mock PictureManagementService pictureManagementServiceMock;
 
-  @InjectMocks
-  @Spy
-  StoryService storyService = new StoryService(userDaoMock, storyDaoMock, chapterDaoMock, storyMapper, chapterMapper, pictureManagementServiceMock);
+  StoryService storyService;
+
+  @BeforeEach
+  public void setUp() {
+    storyService = Mockito.spy(new StoryService(userDaoMock, storyDaoMock, chapterDaoMock, storyMapper, userMapper, chapterMapper, pictureManagementServiceMock));
+  }
 
   @Test
   void searchStories_BasicSearchWithNoSorting() {
@@ -61,12 +67,12 @@ class StoryServiceTest {
     StorySearch storySearch = StorySearch.builder()
       .criteria(Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build())
       .build();
-    List<StoryResponse> storyResponseList = storyService.searchStories(storySearch);
+    List<StoryResponse> storyResponseList = storyService.searchStories(storySearch, AuthorLoadingStrategy.DISABLED);
 
     // then
     verify(storyDaoMock).findAll(any(Specification.class));
     verify(storyService, never()).applySorting(anyList(), any(Sort.class));
-    assertThat(storyResponseList.size()).isEqualTo(1);
+    assertThat(storyResponseList.size()).isOne();
     StoryResponse expectedStoryResponse = storyMapper.toStoryResponse(storyMock, ChaptersLoadingStrategy.ONLY_FIRST);
     assertThat(storyResponseList.get(0)).isEqualTo(expectedStoryResponse);
   }
@@ -75,18 +81,24 @@ class StoryServiceTest {
   void searchStories_BasicSearchSortByTitleAsc() {
     // given
     User userMock = UserMockUtil.getUserMock();
-    List<Story> storyListMock = asList(
-      Story.builder().id(1L).title("A Beautiful Crate").author(userMock).chaptersNumber(0).build(),
-      Story.builder().id(2L).title("Great Holiday Inn").author(userMock).chaptersNumber(0).build(),
-      Story.builder().id(3L).title("Don't Exist Forever!").author(userMock).chaptersNumber(0).build()
-    );
+    List<Story> storyListMock = asList(Story.builder()
+      .id(1L)
+      .title("A Beautiful Crate")
+      .author(userMock)
+      .chaptersNumber(0)
+      .build(), Story.builder()
+      .id(2L)
+      .title("Great Holiday Inn")
+      .author(userMock)
+      .chaptersNumber(0)
+      .build(), Story.builder().id(3L).title("Don't Exist Forever!").author(userMock).chaptersNumber(0).build());
     when(storyDaoMock.findAll(any(Specification.class))).thenReturn(storyListMock);
 
     // when
     Criteria criteria = Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
     Sort sort = Sort.builder().title(SortType.ASC).build();
     StorySearch storySearch = StorySearch.builder().criteria(criteria).sort(sort).build();
-    List<StoryResponse> storyResponseList = storyService.searchStories(storySearch);
+    List<StoryResponse> storyResponseList = storyService.searchStories(storySearch, AuthorLoadingStrategy.DISABLED);
 
     // then
     verify(storyDaoMock).findAll(any(Specification.class));
@@ -99,18 +111,24 @@ class StoryServiceTest {
   void searchStories_BasicSearchSortByTitleDesc() {
     // given
     User userMock = UserMockUtil.getUserMock();
-    List<Story> storyListMock = asList(
-      Story.builder().id(1L).title("A Beautiful Crate").author(userMock).chaptersNumber(0).build(),
-      Story.builder().id(2L).title("Great Holiday Inn").author(userMock).chaptersNumber(0).build(),
-      Story.builder().id(3L).title("Don't Exist Forever!").author(userMock).chaptersNumber(0).build()
-    );
+    List<Story> storyListMock = asList(Story.builder()
+      .id(1L)
+      .title("A Beautiful Crate")
+      .author(userMock)
+      .chaptersNumber(0)
+      .build(), Story.builder()
+      .id(2L)
+      .title("Great Holiday Inn")
+      .author(userMock)
+      .chaptersNumber(0)
+      .build(), Story.builder().id(3L).title("Don't Exist Forever!").author(userMock).chaptersNumber(0).build());
     when(storyDaoMock.findAll(any(Specification.class))).thenReturn(storyListMock);
 
     // when
     Criteria criteria = Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
     Sort sort = Sort.builder().title(SortType.DESC).build();
     StorySearch storySearch = StorySearch.builder().criteria(criteria).sort(sort).build();
-    List<StoryResponse> storyResponseList = storyService.searchStories(storySearch);
+    List<StoryResponse> storyResponseList = storyService.searchStories(storySearch, AuthorLoadingStrategy.DISABLED);
 
     // then
     verify(storyDaoMock).findAll(any(Specification.class));

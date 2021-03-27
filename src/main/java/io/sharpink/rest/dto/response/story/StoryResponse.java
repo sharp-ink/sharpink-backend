@@ -1,5 +1,6 @@
 package io.sharpink.rest.dto.response.story;
 
+import io.sharpink.rest.dto.response.user.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,10 +24,11 @@ public class StoryResponse {
   private String thumbnail;
   private boolean published;
   private Long authorId;
+  private UserResponse author; // nullable
   private Integer chaptersNumber;
-  private List<ChapterResponse> chapters; // peut être null
+  private List<ChapterResponse> chapters; // nullable
   private LocalDateTime creationDate;
   private LocalDateTime lastModificationDate;
   private LocalDateTime finalReleaseDate;
-  private Long threadId; // peut être null
+  private Long threadId; // nullable
 }

@@ -2,12 +2,16 @@ package io.sharpink.service;
 
 import io.sharpink.mapper.story.ChapterMapper;
 import io.sharpink.mapper.story.StoryMapper;
+import io.sharpink.mapper.user.UserMapper;
 import io.sharpink.persistence.dao.story.ChapterDao;
 import io.sharpink.persistence.dao.story.StoryDao;
 import io.sharpink.persistence.dao.user.UserDao;
+import io.sharpink.persistence.entity.story.AuthorLoadingStrategy;
 import io.sharpink.persistence.entity.story.Chapter;
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.Story;
+import io.sharpink.persistence.entity.user.StoriesLoadingStrategy;
+import io.sharpink.persistence.entity.user.User;
 import io.sharpink.rest.dto.request.story.ChapterRequest;
 import io.sharpink.rest.dto.request.story.StoryPatchRequest;
 import io.sharpink.rest.dto.request.story.StoryRequest;
@@ -36,6 +40,7 @@ import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_WEB_URL;
 import static io.sharpink.persistence.dao.story.StoryDao.hasAuthorLike;
 import static io.sharpink.persistence.dao.story.StoryDao.hasTitle;
 import static io.sharpink.persistence.dao.story.StoryDao.hasTitleLike;
+import static io.sharpink.persistence.entity.story.AuthorLoadingStrategy.ENABLED;
 import static io.sharpink.rest.exception.MissingEntity.CHAPTER;
 import static io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum.TITLE_ALREADY_USED;
 import static io.sharpink.shared.SortType.isDefined;
@@ -46,19 +51,21 @@ import static org.springframework.data.jpa.domain.Specification.where;
 @Service
 public class StoryService {
 
-  private UserDao userDao;
-  private StoryDao storyDao;
-  private ChapterDao chapterDao;
-  private StoryMapper storyMapper;
-  ChapterMapper chapterMapper;
-  private PictureManagementService pictureManagementService;
+  private final UserDao userDao;
+  private final StoryDao storyDao;
+  private final ChapterDao chapterDao;
+  private final StoryMapper storyMapper;
+  private final UserMapper userMapper;
+  private final ChapterMapper chapterMapper;
+  private final PictureManagementService pictureManagementService;
 
   @Autowired
-  public StoryService(UserDao userDao, StoryDao storyDao, ChapterDao chapterDao, StoryMapper storyMapper, ChapterMapper chapterMapper, PictureManagementService pictureManagementService) {
+  public StoryService(UserDao userDao, StoryDao storyDao, ChapterDao chapterDao, StoryMapper storyMapper, UserMapper userMapper, ChapterMapper chapterMapper, PictureManagementService pictureManagementService) {
     this.userDao = userDao;
     this.storyDao = storyDao;
     this.chapterDao = chapterDao;
     this.storyMapper = storyMapper;
+    this.userMapper = userMapper;
     this.chapterMapper = chapterMapper;
     this.pictureManagementService = pictureManagementService;
   }
@@ -69,15 +76,23 @@ public class StoryService {
    * @return Une {@code List<StoryDto>} représentant la liste des histoires, vide
    * s'il n'y aucune histoire.
    */
-  public List<StoryResponse> getAllStories(Boolean published) {
+  public List<StoryResponse> getAllStories(Boolean published, AuthorLoadingStrategy authorLoadingStrategy) {
 
-    List<Story> stories = ((List<Story>) storyDao.findAll())
-      .stream()
+    List<Story> stories = ((List<Story>) storyDao.findAll()).stream()
       .filter(story -> story.getChaptersNumber() != 0) // keep stories having at least 1 chapter
-      .filter(story -> published == null || story.isPublished() == published.booleanValue()) // keep only if given published status (or no published status specified)
+      .filter(story -> published == null || story.isPublished() == published) // keep only if given published status (or no published status specified)
       .collect(toList());
 
-    return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.ONLY_FIRST);
+    List<StoryResponse> storyResponses = storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.ONLY_FIRST);
+
+    if (authorLoadingStrategy == ENABLED) {
+      storyResponses.forEach(storyResponse -> {
+        User author = userDao.findById(storyResponse.getAuthorId()).orElseThrow();
+        storyResponse.setAuthor(userMapper.toUserResponse(author, StoriesLoadingStrategy.DISABLED));
+      });
+    }
+
+    return storyResponses;
   }
 
   /**
@@ -101,11 +116,8 @@ public class StoryService {
 
     Optional<Story> storyOptional = storyDao.findById(id);
 
-    if (storyOptional.isPresent()) {
-      return Optional.of(storyMapper.toStoryResponse(storyOptional.get(), ChaptersLoadingStrategy.ALL)); // all chapters are requested
-    } else {
-      return Optional.empty();
-    }
+    // all chapters are requested
+    return storyOptional.map(story -> storyMapper.toStoryResponse(story, ChaptersLoadingStrategy.ALL));
 
   }
 
@@ -140,7 +152,7 @@ public class StoryService {
    * @param storySearch The criteria stories should match, including filters and sorting
    * @return a list of stories matching the given criteria, with appropriate filters / sorting
    */
-  public List<StoryResponse> searchStories(StorySearch storySearch) {
+  public List<StoryResponse> searchStories(StorySearch storySearch, AuthorLoadingStrategy authorLoadingStrategy) {
     String title = storySearch.getCriteria().getTitle();
     String authorName = storySearch.getCriteria().getAuthorName();
 
@@ -150,7 +162,16 @@ public class StoryService {
       applySorting(stories, storySearch.getSort());
     }
 
-    return storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.ONLY_FIRST);
+    List<StoryResponse> storyResponses = storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.ONLY_FIRST);
+
+    if (authorLoadingStrategy == ENABLED) {
+      storyResponses.forEach(storyResponse -> {
+        User author = userDao.findById(storyResponse.getAuthorId()).orElseThrow();
+        storyResponse.setAuthor(userMapper.toUserResponse(author, StoriesLoadingStrategy.DISABLED));
+      });
+    }
+
+    return storyResponses;
   }
 
   /**

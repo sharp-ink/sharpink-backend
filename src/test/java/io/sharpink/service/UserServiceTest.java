@@ -5,8 +5,8 @@ import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.mapper.user.UserMapper;
 import io.sharpink.persistence.dao.user.UserDao;
 import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
-import io.sharpink.persistence.entity.story.StoriesLoadingStrategy;
 import io.sharpink.persistence.entity.story.Story;
+import io.sharpink.persistence.entity.user.StoriesLoadingStrategy;
 import io.sharpink.persistence.entity.user.User;
 import io.sharpink.persistence.entity.user.UserDetails;
 import io.sharpink.persistence.entity.user.UserPreferences;
@@ -46,8 +46,15 @@ import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
