@@ -107,16 +107,15 @@
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
       <!-- Makes Pitest working with JUnit 5 -->
-      <!-- run with mvn org.pitest:pitest-maven:mutationCoverage -->
       <plugin>
         <groupId>org.pitest</groupId>
         <artifactId>pitest-maven</artifactId>
         <version>1.5.2</version>
         <executions>
           <execution>
-            <id>pit-report</id>
+            <phase>none</phase> <!-- Prevent Pitest from executing during default lifecycle -->
             <goals>
-              <goal>mutationCoverage</goal>
+              <goal>mutationCoverage</goal> <!-- run with mvn org.pitest:pitest-maven:mutationCoverage -->
             </goals>
           </execution>
         </executions>
