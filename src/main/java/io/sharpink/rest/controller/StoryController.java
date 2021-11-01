@@ -48,15 +48,15 @@ public class StoryController {
    * Gets all {@code Story} with given publication status.
    */
   @GetMapping("")
-  public List<StoryResponse> getStories(@RequestParam(required = false) Boolean published) {
-    return storyService.getAllStories(published, AuthorLoadingStrategy.ENABLED);
+  public List<StoryResponse> getAllByPublicationStatus(@RequestParam(required = false) Boolean published) {
+    return storyService.getAllStoriesByPublicationStatus(published, AuthorLoadingStrategy.ENABLED);
   }
 
   /**
    * Gets the {@code Story} with the given id.
    */
   @GetMapping("/{id}")
-  public StoryResponse getStory(@PathVariable Long id) {
+  public StoryResponse get(@PathVariable Long id) {
     Optional<StoryResponse> optionalStoryResponse = storyService.getStory(id);
     if (optionalStoryResponse.isPresent()) {
       return optionalStoryResponse.get();
@@ -66,11 +66,10 @@ public class StoryController {
   }
 
   /**
-   * Crée la {@code Story} avec les informations fournies. Renvoie l'id généré
-   * lors de l'insertion en base de données.
+   * Creates {@code Story} with given information. Returns the id of the saved {@code Story}.
    */
   @PostMapping("")
-  public ResponseEntity<?> createStory(@RequestBody StoryRequest storyRequest) {
+  public ResponseEntity<?> create(@RequestBody StoryRequest storyRequest) {
     try {
       Long storyId = storyService.createStory(storyRequest);
       return new ResponseEntity<>(storyId, CREATED);
@@ -85,7 +84,7 @@ public class StoryController {
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<?> updateStory(@PathVariable Long id, @RequestBody StoryPatchRequest storyPatchRequest) {
+  public ResponseEntity<?> update(@PathVariable Long id, @RequestBody StoryPatchRequest storyPatchRequest) {
     try {
       StoryResponse storyResponse = storyService.updateStory(id, storyPatchRequest);
       return new ResponseEntity<>(storyResponse, OK);

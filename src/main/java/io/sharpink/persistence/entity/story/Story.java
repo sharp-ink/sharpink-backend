@@ -36,58 +36,59 @@ import static javax.persistence.EnumType.STRING;
 @Builder
 public class Story implements Comparable<Story> {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(name = "TITLE")
-  private String title;
+    @Column(name = "TITLE")
+    private String title;
 
-  @Column
-  @Enumerated(STRING)
-  private StoryType type;
+    @Column
+    @Enumerated(STRING)
+    private StoryType type;
 
-  @Column(name = "ORIGINAL_STORY")
-  private boolean originalStory;
+    @Column(name = "ORIGINAL_STORY")
+    private boolean originalStory;
 
-  @Column
-  @Enumerated(STRING)
-  private StoryStatus status;
+    @Column
+    @Enumerated(STRING)
+    private StoryStatus status;
 
-  @Column
-  private String summary;
+    @Column
+    private String summary;
 
-  @Column
-  private String thumbnail;
+    @Column
+    private String thumbnail;
 
-  @Column
-  private boolean published;
+    @Column
+    private boolean published;
 
-  @Column(name = "CHAPTERS_NUMBER") private int chaptersNumber;
+    @Column(name = "CHAPTERS_NUMBER")
+    private int chaptersNumber;
 
-  @ManyToOne
-  @ToString.Exclude
-  private User author;
+    @ManyToOne
+    @ToString.Exclude
+    private User author;
 
-  @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
-  @LazyCollection(LazyCollectionOption.TRUE)
-  private List<Chapter> chapters;
+    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private List<Chapter> chapters;
 
-  @Column(name = "CREATION_DATE")
-  private LocalDateTime creationDate;
+    @Column(name = "CREATION_DATE")
+    private LocalDateTime creationDate;
 
-  @Column(name = "LAST_MODIFICATION_DATE")
-  private LocalDateTime lastModificationDate;
+    @Column(name = "LAST_MODIFICATION_DATE")
+    private LocalDateTime lastModificationDate;
 
-  @Column(name = "FINAL_RELEASE_DATE")
-  private LocalDateTime finalReleaseDate;
+    @Column(name = "FINAL_RELEASE_DATE")
+    private LocalDateTime finalReleaseDate;
 
-  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "thread_id")
-  private Thread thread;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "thread_id")
+    private Thread thread;
 
-  @Override
-  public int compareTo(Story o) {
-    return this.lastModificationDate.compareTo(o.lastModificationDate);
-  }
+    @Override
+    public int compareTo(Story o) {
+        return this.lastModificationDate.compareTo(o.lastModificationDate);
+    }
 }

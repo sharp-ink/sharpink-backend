@@ -29,7 +29,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -58,7 +57,7 @@ class UserControllerTest {
     batman = User.builder().nickname("Batman").build();
     john = User.builder().nickname("John Doe").build();
 
-    asList(batman, john).forEach(userDao::save);
+    List.of(batman, john).forEach(userDao::save);
 
     story1_Gotham_by_night = Story.builder()
       .author(batman)
@@ -75,7 +74,7 @@ class UserControllerTest {
       .lastModificationDate(LocalDateTime.now().minusDays(2))
       .build();
 
-    asList(story1_Gotham_by_night, story2_Ode_to_my_Bat_family, story3_Superman_is_gay).forEach(storyDao::save);
+    List.of(story1_Gotham_by_night, story2_Ode_to_my_Bat_family, story3_Superman_is_gay).forEach(storyDao::save);
   }
 
   @AfterAll

@@ -71,16 +71,15 @@ public class StoryService {
   }
 
   /**
-   * Récupère toutes les histoires avec au moins un chapitre présentes en base.
+   * Récupère toutes les histoires avec au moins un chapitre.
    *
    * @return Une {@code List<StoryDto>} représentant la liste des histoires, vide
    * s'il n'y aucune histoire.
    */
-  public List<StoryResponse> getAllStories(Boolean published, AuthorLoadingStrategy authorLoadingStrategy) {
+  public List<StoryResponse> getAllStoriesByPublicationStatus(Boolean published, AuthorLoadingStrategy authorLoadingStrategy) {
 
     List<Story> stories = ((List<Story>) storyDao.findAll()).stream()
-      .filter(story -> story.getChaptersNumber() != 0) // keep stories having at least 1 chapter
-      .filter(story -> published == null || story.isPublished() == published) // keep only if given published status (or no published status specified)
+      .filter(story -> hasChapters(story) && isPublicationStatusMatching(story, published))
       .collect(toList());
 
     List<StoryResponse> storyResponses = storyMapper.toStoryResponseList(stories, ChaptersLoadingStrategy.ONLY_FIRST);
@@ -308,12 +307,20 @@ public class StoryService {
     return storyOptional.isPresent();
   }
 
+  private boolean hasChapters(Story story) {
+    return story.getChaptersNumber() >= 1;
+  }
+
+  private boolean isPublicationStatusMatching(Story story, Boolean published) {
+    return published == null || story.isPublished() == published;
+  }
+
   protected void applySorting(List<Story> stories, Sort sort) {
     Comparator<Story> comparator = ComparatorUtil.noOrder();
 
     if (isDefined(sort.getAuthorName())) {
       comparator = comparator.thenComparing(s -> s.getAuthor().getNickname());
-      if (sort.getTitle().equals(SortType.DESC)) {
+      if (sort.getAuthorName().equals(SortType.DESC)) {
         comparator = comparator.reversed();
       }
     }

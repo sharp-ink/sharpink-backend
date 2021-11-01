@@ -62,7 +62,7 @@ class StoryControllerTest {
     toto = User.builder().nickname("Toto").build();
     titi = User.builder().nickname("Titi").build();
 
-    asList(toto, titi).forEach(userDao::save);
+    userDao.saveAll(asList(toto, titi));
 
     secretStory = Story.builder()
       .author(toto)
@@ -82,13 +82,7 @@ class StoryControllerTest {
       .lastModificationDate(LocalDateTime.now())
       .build();
 
-    asList(secretStory, superSecretStory, loveStory).forEach(storyDao::save);
-  }
-
-  @AfterAll
-  void tearDown() {
-    userDao.deleteAll();
-    storyDao.deleteAll();
+    storyDao.saveAll(asList(secretStory, superSecretStory, loveStory));
   }
 
   @Test
@@ -107,7 +101,7 @@ class StoryControllerTest {
 
     // then
     List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses.size()).isEqualTo(3);
+    assertThat(storyResponses).hasSize(3);
     AssertableStory expectedSecretStory = buildAssertableStory(secretStory);
     AssertableStory expectedSuperSecretStory = buildAssertableStory(superSecretStory);
     AssertableStory expectedLoveStory = buildAssertableStory(loveStory);
@@ -121,7 +115,7 @@ class StoryControllerTest {
 
   @Test
   @DisplayName("Should return 1 story when searching with title 'This is a secret story'")
-  public void search_withTitleOK() throws Exception {
+  public void search_TitleOK() throws Exception {
     // when
     //@formatter:off
     StorySearch storySearch = StorySearch.builder().criteria(
@@ -141,7 +135,7 @@ class StoryControllerTest {
 
     // then
     List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses.size()).isOne();
+    assertThat(storyResponses).hasSize(1);
     AssertableStory expectedSecretStory = buildAssertableStory(secretStory);
     AssertableStory story = buildAssertableStory(storyResponses.get(0));
     assertThat(story).isEqualTo(expectedSecretStory);
@@ -149,7 +143,7 @@ class StoryControllerTest {
 
   @Test
   @DisplayName("Should return 1 story when searching with author name 'Titi'")
-  public void search_withAuthorNameOK() throws Exception {
+  public void search_AuthorNameOK() throws Exception {
     // when
     //@formatter:off
     StorySearch storySearch = StorySearch.builder().criteria(
@@ -169,7 +163,7 @@ class StoryControllerTest {
 
     // then
     List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses.size()).isOne();
+    assertThat(storyResponses).hasSize(1);
     AssertableStory expectedSecretStory = buildAssertableStory(loveStory);
     AssertableStory story = buildAssertableStory(storyResponses.get(0));
     assertThat(story).isEqualTo(expectedSecretStory);
@@ -177,7 +171,7 @@ class StoryControllerTest {
 
   @Test
   @DisplayName("Should return 1 story when searching with title 'This story is way more secret than the other' and author name 'Toto'")
-  public void search_withTitleAndAuthorNameOK() throws Exception {
+  public void search_TitleAndAuthorNameOK() throws Exception {
     // when
     //@formatter:off
     StorySearch storySearch = StorySearch.builder().criteria(
@@ -197,7 +191,7 @@ class StoryControllerTest {
 
     // then
     List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses.size()).isOne();
+    assertThat(storyResponses).hasSize(1);
     AssertableStory expectedSecretStory = buildAssertableStory(superSecretStory);
     AssertableStory story = buildAssertableStory(storyResponses.get(0));
     assertThat(story).isEqualTo(expectedSecretStory);
@@ -205,7 +199,7 @@ class StoryControllerTest {
 
   @Test
   @DisplayName("No story should be found when searching with title 'This title does not exist' and author name 'Toto'")
-  public void search_withTitleKOAndAuthorNameOK() throws Exception {
+  public void search_TitleKOAndAuthorNameOK() throws Exception {
     // when
     //@formatter:off
     StorySearch storySearch = StorySearch.builder().criteria(
@@ -225,12 +219,12 @@ class StoryControllerTest {
 
     // then
     List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses.size()).isZero();
+    assertThat(storyResponses).isEmpty();
   }
 
   @Test
   @DisplayName("No story should be found when searching with title 'This is a secret story' and author name 'Juju'")
-  public void search_withTitleOKAndAuthorNameKO() throws Exception {
+  public void search_TitleOKAndAuthorNameKO() throws Exception {
     // when
     //@formatter:off
     StorySearch storySearch = StorySearch.builder().criteria(
@@ -250,7 +244,13 @@ class StoryControllerTest {
 
     // then
     List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses.size()).isZero();
+    assertThat(storyResponses).isEmpty();
+  }
+
+  @AfterAll
+  void tearDown() {
+    userDao.deleteAll();
+    storyDao.deleteAll();
   }
 
   private AssertableStory buildAssertableStory(Story story) {

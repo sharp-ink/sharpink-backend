@@ -1,15 +1,25 @@
 package io.sharpink.persistence.entity.story;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "STORY_CHAPTER")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Chapter implements Comparable<Chapter> {
 
   @Id

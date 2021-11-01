@@ -287,8 +287,8 @@ class UserServiceTest {
   @Test
   void getPreferences_UserExistsAndHasSomePreferences() {
     // given
-    User userMock = UserMockUtil.getUserMock();
-    userMock.setUserPreferences(UserMockUtil.getUserPreferencesMock());
+    User userMock = UserMockUtil.USER_MOCK;
+    userMock.setUserPreferences(UserMockUtil.USER_PREFERENCES_MOCK);
     when(userDaoMock.findById(anyLong())).thenReturn(Optional.of(userMock));
 
     // when
@@ -322,7 +322,7 @@ class UserServiceTest {
   @Test
   void updateUserPreferences_UserHasNoPreferences() {
     // given
-    User userMock = UserMockUtil.getUserMock();
+    User userMock = UserMockUtil.USER_MOCK;
     when(userDaoMock.findById(anyLong())).thenReturn(Optional.of(userMock));
 
     // when
@@ -344,7 +344,7 @@ class UserServiceTest {
   @Test
   void updateUserPreferences_UserHasAlreadySomePreferences() {
     // given
-    User userMock = UserMockUtil.getUserMock();
+    User userMock = UserMockUtil.USER_MOCK;
     Theme originalPreferredTheme = pickRandomTheme();
     userMock.setUserPreferences(UserPreferences.builder()
       .user(userMock)

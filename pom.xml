@@ -12,18 +12,26 @@
   </parent>
 
   <groupId>io.sharpink</groupId>
-  <artifactId>sharp-ink-backend</artifactId>
+  <artifactId>sharpink-backend</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>sharp-ink-backend</name>
+  <name>sharpink-backend</name>
   <description>SharpInk - Backend</description>
 
   <properties>
     <java.version>11</java.version>
-    <!-- Versions des dépendances -->
-    <io.scaunois.common-util.version>1.0.0-SNAPSHOT</io.scaunois.common-util.version>
+    <!-- Dependencies versions -->
+    <io.sharpink.common.version>1.0.0-SNAPSHOT</io.sharpink.common.version>
+    <mockito.version>4.2.0</mockito.version>
   </properties>
 
   <dependencies>
+
+    <!-- Commons -->
+    <dependency>
+      <groupId>io.sharpink</groupId>
+      <artifactId>sharpink-common</artifactId>
+      <version>${io.sharpink.common.version}</version>
+    </dependency>
 
     <!-- Spring (your best friend) -->
     <dependency>
@@ -35,13 +43,6 @@
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- Commons -->
-    <dependency>
-      <groupId>io.scaunois</groupId>
-      <artifactId>common-util</artifactId>
-      <version>${io.scaunois.common-util.version}</version>
-    </dependency>
-
     <!-- Persistence -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -51,12 +52,6 @@
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <scope>runtime</scope>
-    </dependency>
-
-    <!-- Lombok -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
     </dependency>
 
     <!-- TEST -->
@@ -78,16 +73,15 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>3.6.28</version>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>3.6.28</version>
+      <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
@@ -106,7 +100,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
-      <!-- Makes Pitest working with JUnit 5 -->
+      <!-- Makes Pitest work with JUnit 5 -->
       <plugin>
         <groupId>org.pitest</groupId>
         <artifactId>pitest-maven</artifactId>
@@ -115,7 +109,9 @@
           <execution>
             <phase>none</phase> <!-- Prevent Pitest from executing during default lifecycle -->
             <goals>
-              <goal>mutationCoverage</goal> <!-- run with mvn org.pitest:pitest-maven:mutationCoverage -->
+              <goal>mutationCoverage</goal>
+              <!-- Can be run only manually (see reason above) with following command :
+                mvn -DwithHistory -Dmutators=ALL org.pitest:pitest-maven:mutationCoverage -->
             </goals>
           </execution>
         </executions>
@@ -133,23 +129,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <repositories>
-    <repository>
-      <id>nexus-snapshots</id>
-      <url>http://localhost:8081/repository/maven-snapshots/</url>
-    </repository>
-  </repositories>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>nexus-snapshots</id>
-      <url>http://localhost:8081/repository/maven-snapshots/</url>
-    </snapshotRepository>
-    <repository>
-      <id>nexus-releases</id>
-      <url>http://localhost:8081/repository/maven-releases/</url>
-    </repository>
-  </distributionManagement>
 
 </project>

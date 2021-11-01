@@ -10,27 +10,12 @@ import io.sharpink.util.json.JsonUtil;
 
 public class UserMockUtil {
 
-  static final User USER_MOCK = mockUser();
-  static final UserPreferences USER_PREFERENCES_MOCK = mockUserPreferences();
-  static final UserResponse USER_RESPONSE_MOCK = mockUserResponse();
-
-  public static User getUserMock() {
-    return USER_MOCK;
-  }
-
-  public static UserPreferences getUserPreferencesMock() {
-    return USER_PREFERENCES_MOCK;
-  }
-
-  public static UserResponse getUserResponseMock() {
-    return USER_RESPONSE_MOCK;
-  }
+  public static final User USER_MOCK = mockUser();
+  public static final UserPreferences USER_PREFERENCES_MOCK = mockUserPreferences();
+  public static final UserResponse USER_RESPONSE_MOCK = mockUserResponse();
 
   private static User mockUser() {
-    return User.builder()
-      .id(1L)
-      .nickname("Batman")
-      .email("dark-knight@gotham.com")
+    return User.builder().id(1L).nickname("Batman").email("dark-knight@gotham.com")
       // TODO set more fields if needed
       .build();
   }
