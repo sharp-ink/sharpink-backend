@@ -13,42 +13,42 @@ import java.util.Date;
 @Builder
 public class UserDetails {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	protected Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Integer id;
 
-  @OneToOne
-  @ToString.Exclude
-	private User user;
+    @OneToOne
+    @ToString.Exclude
+    private User user;
 
-	@Column(name = "FIRSTNAME")
-	protected String firstName;
+    @Column(name = "FIRSTNAME")
+    protected String firstName;
 
-	@Column(name = "LASTNAME")
-	protected String lastName;
+    @Column(name = "LASTNAME")
+    protected String lastName;
 
-	@Column(name = "PROFILE_PICTURE")
-  protected String profilePicture;
+    @Column(name = "PROFILE_PICTURE")
+    protected String profilePicture;
 
-	@Column(name = "BIRTH_DATE")
-	protected Date birthDate;
+    @Column(name = "BIRTH_DATE")
+    protected Date birthDate;
 
-	@Column(name = "COUNTRY")
-	protected String country;
+    @Column(name = "COUNTRY")
+    protected String country;
 
-	@Column(name = "TOWN")
-	protected String town;
+    @Column(name = "TOWN")
+    protected String town;
 
-	@Column(name = "JOB")
-	protected String job;
+    @Column(name = "JOB")
+    protected String job;
 
-	@Column(name = "IS_EMAIL_PUBLIC")
-	protected boolean emailPublished;
+    @Column(name = "IS_EMAIL_PUBLIC")
+    protected boolean emailPublished;
 
-	@Column(name = "CUSTOM_MESSAGE")
-	protected String customMessage;
+    @Column(name = "CUSTOM_MESSAGE")
+    protected String customMessage;
 
-	@Column(name = "BIOGRAPHY")
-	protected String biography;
+    @Column(name = "BIOGRAPHY")
+    protected String biography;
 
 }

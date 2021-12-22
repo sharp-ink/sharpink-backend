@@ -14,15 +14,14 @@ public class PictureManagementService {
 
   /**
    * Store an image on the file system, at specified location.
-   * @param formImageData the image obtained from a html form, in base64 format and with html metadata
+   * @param base64ImageContent the image obtained from a html form, in base64 format, with html metadata stripped
    * @param destinationPath the location on the file system where the image should be stored (folder + name + extension)
    */
-  public void storePictureOnFileSystem(String formImageData, String destinationPath) throws IOException {
-    String base64Content = extractBase64Content(formImageData);
+  public void storePictureOnFileSystem(String base64ImageContent, String destinationPath) throws IOException {
     Files.createDirectories(Paths.get(destinationPath).getParent()); // to avoid non existent folders
     Files.write(
       Paths.get(destinationPath),
-      DatatypeConverter.parseBase64Binary(base64Content)
+      DatatypeConverter.parseBase64Binary(base64ImageContent)
     );
   }
 

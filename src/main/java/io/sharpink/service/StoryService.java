@@ -1,5 +1,6 @@
 package io.sharpink.service;
 
+import io.sharpink.config.SharpinkConfiguration;
 import io.sharpink.mapper.story.ChapterMapper;
 import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.mapper.user.UserMapper;
@@ -35,8 +36,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_PATH;
-import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_WEB_URL;
 import static io.sharpink.persistence.dao.story.StoryDao.hasAuthorLike;
 import static io.sharpink.persistence.dao.story.StoryDao.hasTitle;
 import static io.sharpink.persistence.dao.story.StoryDao.hasTitleLike;
@@ -58,9 +57,11 @@ public class StoryService {
   private final UserMapper userMapper;
   private final ChapterMapper chapterMapper;
   private final PictureManagementService pictureManagementService;
+  private final SharpinkConfiguration sharpinkConfiguration;
 
   @Autowired
-  public StoryService(UserDao userDao, StoryDao storyDao, ChapterDao chapterDao, StoryMapper storyMapper, UserMapper userMapper, ChapterMapper chapterMapper, PictureManagementService pictureManagementService) {
+  public StoryService(UserDao userDao, StoryDao storyDao, ChapterDao chapterDao, StoryMapper storyMapper, UserMapper userMapper, ChapterMapper chapterMapper,
+    PictureManagementService pictureManagementService, SharpinkConfiguration sharpinkConfiguration) {
     this.userDao = userDao;
     this.storyDao = storyDao;
     this.chapterDao = chapterDao;
@@ -68,6 +69,7 @@ public class StoryService {
     this.userMapper = userMapper;
     this.chapterMapper = chapterMapper;
     this.pictureManagementService = pictureManagementService;
+    this.sharpinkConfiguration = sharpinkConfiguration;
   }
 
   /**
@@ -205,11 +207,11 @@ public class StoryService {
       if (isNotEmpty(storyPatchRequest.getThumbnail())) {
         String formImageData = storyPatchRequest.getThumbnail();
         String extension = PictureUtil.extractExtension(formImageData);
-        String storyThumbnailWebUrl = USERS_PROFILE_PICTURES_WEB_URL + '/' + story.getAuthor()
+        String storyThumbnailWebUrl = sharpinkConfiguration.getUsersProfilePictureWebUrl() + '/' + story.getAuthor()
           .getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
         story.setThumbnail(storyThumbnailWebUrl);
         try {
-          String storyThumbnailFSPath = USERS_PROFILE_PICTURES_PATH + '/' + story.getAuthor()
+          String storyThumbnailFSPath = sharpinkConfiguration.getUsersProfilePictureFileSystemPath() + '/' + story.getAuthor()
             .getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
           pictureManagementService.storePictureOnFileSystem(formImageData, storyThumbnailFSPath);
         } catch (IOException e) {

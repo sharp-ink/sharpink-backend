@@ -6,6 +6,5 @@ package io.sharpink.constant;
  * This class is the last resort!
  */
 public class Constants {
-  public static final String USERS_PROFILE_PICTURES_WEB_URL = "http://sharpink.io/sharpink/users";
-  public static final String USERS_PROFILE_PICTURES_PATH = "/var/sharpink/users";
+
 }

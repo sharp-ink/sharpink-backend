@@ -1,6 +1,7 @@
 package io.sharpink.service;
 
 import io.sharpink.UserMockUtil;
+import io.sharpink.config.SharpinkConfiguration;
 import io.sharpink.mapper.story.StoryMapper;
 import io.sharpink.mapper.user.UserMapper;
 import io.sharpink.persistence.dao.user.UserDao;
@@ -23,12 +24,17 @@ import io.sharpink.rest.exception.NotFound404Exception;
 import io.sharpink.service.picture.PictureManagementService;
 import io.sharpink.util.json.JsonUtil;
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -39,33 +45,39 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_PATH;
-import static io.sharpink.constant.Constants.USERS_PROFILE_PICTURES_WEB_URL;
 import static java.util.Arrays.asList;
 import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@EnableConfigurationProperties(SharpinkConfiguration.class)
+@TestPropertySource("classpath:application.properties")
 class UserServiceTest {
 
-  @Mock UserDao userDaoMock;
-  @Mock StoryMapper storyMapperMock;
-  @Mock PictureManagementService pictureManagementServiceMock;
+  @MockBean
+  UserDao userDaoMock;
+
+  @MockBean
+  StoryMapper storyMapperMock;
+
+  @MockBean
+  PictureManagementService pictureManagementServiceMock;
+
   @Spy UserMapper userMapper = new UserMapper(storyMapperMock);
 
-  @InjectMocks
-  UserService userService = new UserService(userDaoMock, userMapper, storyMapperMock, pictureManagementServiceMock);
+  @Autowired
+  SharpinkConfiguration sharpinkConfigurationMock;
+
+  UserService userService;
+
+  @BeforeEach
+  void setUp() {
+    userService = new UserService(userDaoMock, userMapper, storyMapperMock, pictureManagementServiceMock, sharpinkConfigurationMock);
+  }
 
   @Test
   void getAllUsers() {
@@ -245,10 +257,10 @@ class UserServiceTest {
     // then
     verify(userDaoMock).findById(id);
 
-    String expectedProfilePictureFSPath = USERS_PROFILE_PICTURES_PATH + "/Superman/Superman.jpg";
+    String expectedProfilePictureFSPath = sharpinkConfigurationMock.getResources().getFileSystemPath() + "/users/Superman/Superman.jpg";
     verify(pictureManagementServiceMock).storePictureOnFileSystem("/9j/4AAQSkZJRgABAQETCETCETC", expectedProfilePictureFSPath);
 
-    String expectedProfilePicture = USERS_PROFILE_PICTURES_WEB_URL + "/Superman/Superman.jpg";
+    String expectedProfilePicture = sharpinkConfigurationMock.getResources().getWebUrl() + "/users/Superman/Superman.jpg";
     assertThat(updatedUserResponse.getUserDetails()).isNotNull();
     assertThat(updatedUserResponse.getUserDetails().getProfilePicture()).isEqualTo(expectedProfilePicture);
   }
