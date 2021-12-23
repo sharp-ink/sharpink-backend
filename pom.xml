@@ -82,6 +82,7 @@
       <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Embedded H2 database, use as datasource for testing the DAO + Controller layers -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
