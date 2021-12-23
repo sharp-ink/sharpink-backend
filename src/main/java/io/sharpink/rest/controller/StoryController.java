@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -48,8 +47,8 @@ public class StoryController {
    * Gets all {@code Story} with given publication status.
    */
   @GetMapping("")
-  public List<StoryResponse> getAllByPublicationStatus(@RequestParam(required = false) Boolean published) {
-    return storyService.getAllStoriesByPublicationStatus(published, AuthorLoadingStrategy.ENABLED);
+  public List<StoryResponse> getAllPublicStories() {
+    return storyService.getAllPublicStories(AuthorLoadingStrategy.ENABLED);
   }
 
   /**

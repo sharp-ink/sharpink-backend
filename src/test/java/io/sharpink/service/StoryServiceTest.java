@@ -13,8 +13,6 @@ import io.sharpink.persistence.entity.story.ChaptersLoadingStrategy;
 import io.sharpink.persistence.entity.story.Story;
 import io.sharpink.persistence.entity.user.User;
 import io.sharpink.rest.controller.StoryMockUtil;
-import io.sharpink.rest.dto.request.story.search.Criteria;
-import io.sharpink.rest.dto.request.story.search.Sort;
 import io.sharpink.rest.dto.request.story.search.StorySearch;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import io.sharpink.rest.dto.response.user.UserResponse;
@@ -27,9 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.context.assertj.ApplicationContextAssert;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -52,11 +48,14 @@ import static org.mockito.Mockito.*;
 @TestPropertySource("classpath:application.properties")
 class StoryServiceTest {
 
-    @MockBean UserDao userDaoMock;
+    @MockBean
+    UserDao userDaoMock;
 
-    @MockBean StoryDao storyDaoMock;
+    @MockBean
+    StoryDao storyDaoMock;
 
-    @MockBean ChapterDao chapterDaoMock;
+    @MockBean
+    ChapterDao chapterDaoMock;
 
     ChapterMapper chapterMapper = new ChapterMapper();
 
@@ -64,9 +63,11 @@ class StoryServiceTest {
 
     UserMapper userMapper = new UserMapper(storyMapper);
 
-    @MockBean PictureManagementService pictureManagementServiceMock;
+    @MockBean
+    PictureManagementService pictureManagementServiceMock;
 
-    @Autowired SharpinkConfiguration sharpinkConfiguration;
+    @Autowired
+    SharpinkConfiguration sharpinkConfiguration;
 
     StoryService storyService;
 
@@ -77,155 +78,91 @@ class StoryServiceTest {
     }
 
     @Test
-    @DisplayName("Should return all stories when filtering with empty publication status (null)")
-    void getAllStoriesByPublicationStatus_EmptyPublicationStatus() {
+    @DisplayName("Should return all public stories")
+    void getAllPublicStories() {
         // given
         Story story1 = mockStory(1L, "Hello world!", 1);
         story1.setPublished(true);
-        Story story2 = mockStory(2L, "Bye bye world!", 1);
-        story2.setPublished(false);
-        List<Story> storyListMock = List.of(story1, story2);
-        when(storyDaoMock.findAll()).thenReturn(storyListMock);
+        when(storyDaoMock.findAll(any(Specification.class))).thenReturn(List.of(story1));
 
         // when
-        Boolean nullPublicationStatus = null;
-        List<StoryResponse> storyResponseList = storyService.getAllStoriesByPublicationStatus(nullPublicationStatus, AuthorLoadingStrategy.DISABLED);
+        List<StoryResponse> storyResponseList = storyService.getAllPublicStories(AuthorLoadingStrategy.DISABLED);
 
         // then
-        verify(storyDaoMock).findAll();
-        AssertableStoryResponse expectedStoryResponse1 = buildAssertableStoryResponse(storyMapper.toStoryResponse(story1, ChaptersLoadingStrategy.ONLY_FIRST), AuthorLoadingStrategy.DISABLED);
-        AssertableStoryResponse expectedStoryResponse2 = buildAssertableStoryResponse(storyMapper.toStoryResponse(story2, ChaptersLoadingStrategy.ONLY_FIRST), AuthorLoadingStrategy.DISABLED);
-        List<AssertableStoryResponse> assertableStoryResponseList = storyResponseList.stream()
-            .map(this::buildAssertableStoryResponse)
-            .collect(toList());
-        assertThat(assertableStoryResponseList)
-            .hasSize(2)
-            .contains(expectedStoryResponse1, expectedStoryResponse2);
-
-    }
-
-    @Test
-    @DisplayName("Should return 1 story of 2 when filtering only published stories")
-    void getAllStoriesByPublicationStatus_PublicationStatusTrue() {
-        // given
-        Story story1 = mockStory(1L, "Hello world!", 1);
-        story1.setPublished(true);
-        Story story2 = mockStory(2L, "Bye bye world!", 1);
-        story2.setPublished(false);
-        List<Story> storyListMock = List.of(story1, story2);
-        when(storyDaoMock.findAll()).thenReturn(storyListMock);
-
-        // when
-        List<StoryResponse> storyResponseList = storyService.getAllStoriesByPublicationStatus(true, AuthorLoadingStrategy.DISABLED);
-
-        // then
-        verify(storyDaoMock).findAll();
+        verify(storyDaoMock).findAll(any(Specification.class));
         AssertableStoryResponse expectedStoryResponse1 = buildAssertableStoryResponse(storyMapper.toStoryResponse(story1, ChaptersLoadingStrategy.ONLY_FIRST), AuthorLoadingStrategy.DISABLED);
         List<AssertableStoryResponse> assertableStoryResponseList = storyResponseList.stream()
             .map(this::buildAssertableStoryResponse)
             .collect(toList());
-        assertThat(assertableStoryResponseList)
-            .hasSize(1)
-            .contains(expectedStoryResponse1);
-    }
-
-    @Test
-    @DisplayName("Should return 1 story of 2 when filtering only NOT published stories")
-    void getAllStoriesByPublicationStatus_PublicationStatusFalse() {
-        // given
-        Story story1 = mockStory(1L, "Hello world!", 1);
-        story1.setPublished(true);
-        Story story2 = mockStory(2L, "Bye bye world!", 1);
-        story2.setPublished(false);
-        List<Story> storyListMock = List.of(story1, story2);
-        when(storyDaoMock.findAll()).thenReturn(storyListMock);
-
-        // when
-        List<StoryResponse> storyResponseList = storyService.getAllStoriesByPublicationStatus(false, AuthorLoadingStrategy.DISABLED);
-
-        // then
-        verify(storyDaoMock).findAll();
-        AssertableStoryResponse expectedStoryResponse2 = buildAssertableStoryResponse(storyMapper.toStoryResponse(story2, ChaptersLoadingStrategy.ONLY_FIRST), AuthorLoadingStrategy.DISABLED);
-        List<AssertableStoryResponse> assertableStoryResponseList = storyResponseList.stream()
-            .map(this::buildAssertableStoryResponse)
-            .collect(toList());
-        assertThat(assertableStoryResponseList)
-            .hasSize(1)
-            .contains(expectedStoryResponse2);
+        assertThat(assertableStoryResponseList).containsExactly(expectedStoryResponse1);
 
     }
 
     @Test
-    @DisplayName("Should return 1 story when there is 2 stories but only one has chapters")
-    void getAllStoriesByPublicationStatus_1StoryWithChaptersAnd1StoryWithoutChapters() {
+    @DisplayName("Should return 1 story when there is 2 public stories but only one has chapters")
+    void getAllPublicStories_1StoryWithChaptersAnd1StoryWithoutChapters() {
         // given
         Story story1 = mockStory(1L, "Hello world!", 10);
         Story story2 = mockStory(2L, "Bye bye world!", 0);
-        List<Story> storyListMock = List.of(story1, story2);
-        when(storyDaoMock.findAll()).thenReturn(storyListMock);
+        story1.setPublished(true);
+        story2.setPublished(true);
+        when(storyDaoMock.findAll(any(Specification.class))).thenReturn(List.of(story1, story2));
 
         // when
-        List<StoryResponse> storyResponseList = storyService.getAllStoriesByPublicationStatus(null, AuthorLoadingStrategy.DISABLED);
+        List<StoryResponse> storyResponseList = storyService.getAllPublicStories(AuthorLoadingStrategy.DISABLED);
 
         // then
-        verify(storyDaoMock).findAll();
+        verify(storyDaoMock).findAll(any(Specification.class));
         AssertableStoryResponse expectedStoryResponse1 = buildAssertableStoryResponse(storyMapper.toStoryResponse(story1, ChaptersLoadingStrategy.ONLY_FIRST), AuthorLoadingStrategy.DISABLED);
         List<AssertableStoryResponse> assertableStoryResponseList = storyResponseList.stream()
             .map(this::buildAssertableStoryResponse)
             .collect(toList());
-        assertThat(assertableStoryResponseList)
-            .hasSize(1)
-            .contains(expectedStoryResponse1);
+        assertThat(assertableStoryResponseList).containsExactly(expectedStoryResponse1);
 
     }
 
     @Test
     @DisplayName("Field 'StoryResponse.author' should not be set when using AuthorLoadingStrategy.DISABLED")
-    void getAllStoriesByPublicationStatus_DontLoadAuthor() {
+    void getAllPublicStories_DontLoadAuthor() {
         // given
         Story story1 = mockStory(1L, "Hi buddy!", 2);
-        List<Story> storyListMock = List.of(story1);
-        when(storyDaoMock.findAll()).thenReturn(storyListMock);
+        story1.setPublished(true);
+        when(storyDaoMock.findAll(any(Specification.class))).thenReturn(List.of(story1));
 
         // when
-        List<StoryResponse> storyResponseList = storyService.getAllStoriesByPublicationStatus(null, AuthorLoadingStrategy.DISABLED);
+        List<StoryResponse> storyResponseList = storyService.getAllPublicStories(AuthorLoadingStrategy.DISABLED);
 
         // then
-        verify(storyDaoMock).findAll();
+        verify(storyDaoMock).findAll(any(Specification.class));
         verifyNoInteractions(userDaoMock);
         AssertableStoryResponse expectedStoryResponse1 = buildAssertableStoryResponse(storyMapper.toStoryResponse(story1, ChaptersLoadingStrategy.ONLY_FIRST), AuthorLoadingStrategy.DISABLED);
         List<AssertableStoryResponse> assertableStoryResponseList = storyResponseList.stream()
             .map(this::buildAssertableStoryResponse)
             .collect(toList());
-        assertThat(assertableStoryResponseList)
-            .hasSize(1)
-            .contains(expectedStoryResponse1);
+        assertThat(assertableStoryResponseList).containsExactly(expectedStoryResponse1);
         assertThat(assertableStoryResponseList.get(0).getAuthor()).isNull();
     }
 
     @Test
     @DisplayName("Field 'StoryResponse.author' should be set when using AuthorLoadingStrategy.ENABLED")
-    void getAllStoriesByPublicationStatus_LoadAuthor() {
+    void getAllPublicStories_LoadAuthor() {
         // given
         Story story1 = mockStory(1L, "Hi buddy!", 2);
-        List<Story> storyListMock = List.of(story1);
-        when(storyDaoMock.findAll()).thenReturn(storyListMock);
+        story1.setPublished(true);
+        when(storyDaoMock.findAll(any(Specification.class))).thenReturn(List.of(story1));
         User userMock = UserMockUtil.USER_MOCK;
         when(userDaoMock.findById(anyLong())).thenReturn(Optional.of(userMock));
 
         // when
-        List<StoryResponse> storyResponseList = storyService.getAllStoriesByPublicationStatus(null, AuthorLoadingStrategy.ENABLED);
+        List<StoryResponse> storyResponseList = storyService.getAllPublicStories(AuthorLoadingStrategy.ENABLED);
 
         // then
-        verify(storyDaoMock).findAll();
-        verify(userDaoMock).findById(UserMockUtil.USER_MOCK.getId());
+        verify(storyDaoMock).findAll(any(Specification.class));
         AssertableStoryResponse expectedStoryResponse1 = buildAssertableStoryResponse(storyMapper.toStoryResponse(story1, ChaptersLoadingStrategy.ONLY_FIRST), AuthorLoadingStrategy.ENABLED);
         List<AssertableStoryResponse> assertableStoryResponseList = storyResponseList.stream()
             .map(this::buildAssertableStoryResponse)
             .collect(toList());
-        assertThat(assertableStoryResponseList)
-            .hasSize(1)
-            .contains(expectedStoryResponse1);
+        assertThat(assertableStoryResponseList).containsExactly(expectedStoryResponse1);
         assertThat(assertableStoryResponseList.get(0).getAuthor())
             .isNotNull()
             .isEqualTo(AssertableUserResponse.builder().id(userMock.getId()).build());
@@ -239,13 +176,13 @@ class StoryServiceTest {
 
         // when
         StorySearch storySearch = StorySearch.builder()
-            .criteria(Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build())
+            .criteria(StorySearch.Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build())
             .build();
         List<StoryResponse> storyResponseList = storyService.searchStories(storySearch, AuthorLoadingStrategy.DISABLED);
 
         // then
         verify(storyDaoMock).findAll(any(Specification.class));
-        verify(storyService, never()).applySorting(anyList(), any(Sort.class));
+        verify(storyService, never()).applySorting(anyList(), any(StorySearch.Sort.class));
         assertThat(storyResponseList).hasSize(1);
         StoryResponse expectedStoryResponse = storyMapper.toStoryResponse(storyMock, ChaptersLoadingStrategy.ONLY_FIRST);
         assertThat(storyResponseList.get(0)).isEqualTo(expectedStoryResponse);
@@ -262,8 +199,8 @@ class StoryServiceTest {
         when(storyDaoMock.findAll(any(Specification.class))).thenReturn(storyListMock);
 
         // when
-        Criteria criteria = Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
-        Sort sort = Sort.builder().title(SortType.ASC).build();
+        StorySearch.Criteria criteria = StorySearch.Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
+        StorySearch.Sort sort = StorySearch.Sort.builder().title(SortType.ASC).build();
         StorySearch storySearch = StorySearch.builder().criteria(criteria).sort(sort).build();
         List<StoryResponse> storyResponseList = storyService.searchStories(storySearch, AuthorLoadingStrategy.DISABLED);
 
@@ -286,8 +223,8 @@ class StoryServiceTest {
         when(storyDaoMock.findAll(any(Specification.class))).thenReturn(storyListMock);
 
         // when
-        Criteria criteria = Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
-        Sort sort = Sort.builder().title(SortType.DESC).build();
+        StorySearch.Criteria criteria = StorySearch.Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
+        StorySearch.Sort sort = StorySearch.Sort.builder().title(SortType.DESC).build();
         StorySearch storySearch = StorySearch.builder().criteria(criteria).sort(sort).build();
         List<StoryResponse> storyResponseList = storyService.searchStories(storySearch, AuthorLoadingStrategy.DISABLED);
 
@@ -315,8 +252,8 @@ class StoryServiceTest {
         when(userDaoMock.findById(3L)).thenReturn(Optional.of(userMock3));
 
         // when
-        Criteria criteria = Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
-        Sort sort = Sort.builder().authorName(SortType.ASC).build();
+        StorySearch.Criteria criteria = StorySearch.Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
+        StorySearch.Sort sort = StorySearch.Sort.builder().authorName(SortType.ASC).build();
         StorySearch storySearch = StorySearch.builder().criteria(criteria).sort(sort).build();
         List<StoryResponse> storyResponseList = storyService.searchStories(storySearch, AuthorLoadingStrategy.ENABLED);
 
@@ -344,8 +281,8 @@ class StoryServiceTest {
         when(userDaoMock.findById(3L)).thenReturn(Optional.of(userMock3));
 
         // when
-        Criteria criteria = Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
-        Sort sort = Sort.builder().authorName(SortType.DESC).build();
+        StorySearch.Criteria criteria = StorySearch.Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build();
+        StorySearch.Sort sort = StorySearch.Sort.builder().authorName(SortType.DESC).build();
         StorySearch storySearch = StorySearch.builder().criteria(criteria).sort(sort).build();
         List<StoryResponse> storyResponseList = storyService.searchStories(storySearch, AuthorLoadingStrategy.ENABLED);
 
@@ -367,14 +304,13 @@ class StoryServiceTest {
 
         // when
         StorySearch storySearch = StorySearch.builder()
-            .criteria(Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build())
+            .criteria(StorySearch.Criteria.builder().title(randomAlphabetic(10)).authorName(randomAlphabetic(10)).build())
             .build();
         List<StoryResponse> storyResponseList = storyService.searchStories(storySearch, AuthorLoadingStrategy.ENABLED);
 
         // then
         verify(storyDaoMock).findAll(any(Specification.class));
-        verify(storyService, never()).applySorting(anyList(), any(Sort.class));
-        verify(userDaoMock).findById(UserMockUtil.USER_MOCK.getId());
+        verify(storyService, never()).applySorting(anyList(), any(StorySearch.Sort.class));
         List<AssertableStoryResponse> assertableStoryResponseList = storyResponseList.stream()
             .map(storyResponse -> buildAssertableStoryResponse(storyResponse, AuthorLoadingStrategy.ENABLED))
             .collect(toList());

@@ -16,6 +16,10 @@ public interface StoryDao extends CrudRepository<Story, Long>, JpaSpecificationE
 
   List<Story> findByAuthorId(Long authorId);
 
+  static Specification<Story> isPublic() {
+    return (story, cq, cb) -> cb.isTrue(story.get("published"));
+  }
+
   static Specification<Story> hasTitle(String title) {
     return (story, cq, cb) -> cb.equal(cb.trim(cb.lower(story.get("title"))), lowerCase(title));
   }

@@ -5,7 +5,6 @@ import io.sharpink.persistence.dao.story.StoryDao;
 import io.sharpink.persistence.dao.user.UserDao;
 import io.sharpink.persistence.entity.story.Story;
 import io.sharpink.persistence.entity.user.User;
-import io.sharpink.rest.dto.request.story.search.Criteria;
 import io.sharpink.rest.dto.request.story.search.StorySearch;
 import io.sharpink.rest.dto.response.story.StoryResponse;
 import io.sharpink.util.json.JsonUtil;
@@ -41,251 +40,254 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StoryControllerTest {
 
-  @Autowired private MockMvc mockMvc;
-  @Autowired private UserDao userDao;
-  @Autowired private StoryDao storyDao;
+    @Autowired private MockMvc mockMvc;
+    @Autowired private UserDao userDao;
+    @Autowired private StoryDao storyDao;
 
-  private final Criteria EMPTY_CRITERIA_WITHOUT_FILTER_AND_SORTING = Criteria.builder()
-    .title(null)
-    .authorName(null)
-    .build();
-
-  User toto;
-  User titi;
-
-  Story secretStory;
-  Story superSecretStory;
-  Story loveStory;
-
-  @BeforeAll
-  void init() {
-    toto = User.builder().nickname("Toto").build();
-    titi = User.builder().nickname("Titi").build();
-
-    userDao.saveAll(asList(toto, titi));
-
-    secretStory = Story.builder()
-      .author(toto)
-      .title("This is a secret story")
-      .lastModificationDate(LocalDateTime.now())
-      .build();
-
-    superSecretStory = Story.builder()
-      .author(toto)
-      .title("This story is way more secret than the other")
-      .lastModificationDate(LocalDateTime.now())
-      .build();
-
-    loveStory = Story.builder()
-      .author(titi)
-      .title("A story about love")
-      .lastModificationDate(LocalDateTime.now())
-      .build();
-
-    storyDao.saveAll(asList(secretStory, superSecretStory, loveStory));
-  }
-
-  @Test
-  @DisplayName("All stories should be returned when searching with empty criteria")
-  public void search_EmptyCriteria() throws Exception {
-    // when
-    StorySearch storySearch = StorySearch.builder().criteria(EMPTY_CRITERIA_WITHOUT_FILTER_AND_SORTING).build();
-    //@formatter:off
-    String jsonResult = mockMvc.perform(
-        post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
-      .andExpect(status().isOk())
-      .andReturn()
-      .getResponse()
-      .getContentAsString();
-    //@formatter:on
-
-    // then
-    List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses).hasSize(3);
-    AssertableStory expectedSecretStory = buildAssertableStory(secretStory);
-    AssertableStory expectedSuperSecretStory = buildAssertableStory(superSecretStory);
-    AssertableStory expectedLoveStory = buildAssertableStory(loveStory);
-    AssertableStory story1 = buildAssertableStory(storyResponses.get(0));
-    AssertableStory story2 = buildAssertableStory(storyResponses.get(1));
-    AssertableStory story3 = buildAssertableStory(storyResponses.get(2));
-    assertThat(story1).isEqualTo(expectedSecretStory);
-    assertThat(story2).isEqualTo(expectedSuperSecretStory);
-    assertThat(story3).isEqualTo(expectedLoveStory);
-  }
-
-  @Test
-  @DisplayName("Should return 1 story when searching with title 'This is a secret story'")
-  public void search_TitleOK() throws Exception {
-    // when
-    //@formatter:off
-    StorySearch storySearch = StorySearch.builder().criteria(
-      Criteria.builder()
-        .title("This is a secret story")
-        .authorName(null)
-        .build()
-    ).build();
-
-    String jsonResult = mockMvc.perform(
-      post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
-      .andExpect(status().isOk())
-      .andReturn()
-      .getResponse()
-      .getContentAsString();
-    //@formatter:on
-
-    // then
-    List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses).hasSize(1);
-    AssertableStory expectedSecretStory = buildAssertableStory(secretStory);
-    AssertableStory story = buildAssertableStory(storyResponses.get(0));
-    assertThat(story).isEqualTo(expectedSecretStory);
-  }
-
-  @Test
-  @DisplayName("Should return 1 story when searching with author name 'Titi'")
-  public void search_AuthorNameOK() throws Exception {
-    // when
-    //@formatter:off
-    StorySearch storySearch = StorySearch.builder().criteria(
-      Criteria.builder()
+    private final StorySearch.Criteria EMPTY_CRITERIA_WITHOUT_FILTER_AND_SORTING = StorySearch.Criteria.builder()
         .title(null)
-        .authorName("Titi")
-        .build()
-    ).build();
+        .authorName(null)
+        .build();
 
-    String jsonResult = mockMvc.perform(
-      post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
-      .andExpect(status().isOk())
-      .andReturn()
-      .getResponse()
-      .getContentAsString();
-    //@formatter:on
+    User toto;
+    User titi;
 
-    // then
-    List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses).hasSize(1);
-    AssertableStory expectedSecretStory = buildAssertableStory(loveStory);
-    AssertableStory story = buildAssertableStory(storyResponses.get(0));
-    assertThat(story).isEqualTo(expectedSecretStory);
-  }
+    Story secretStory;
+    Story superSecretStory;
+    Story loveStory;
 
-  @Test
-  @DisplayName("Should return 1 story when searching with title 'This story is way more secret than the other' and author name 'Toto'")
-  public void search_TitleAndAuthorNameOK() throws Exception {
-    // when
-    //@formatter:off
-    StorySearch storySearch = StorySearch.builder().criteria(
-      Criteria.builder()
-        .title("This story is way more secret than the other")
-        .authorName("Toto")
-        .build()
-    ).build();
+    @BeforeAll
+    void init() {
+        toto = User.builder().nickname("Toto").build();
+        titi = User.builder().nickname("Titi").build();
 
-    String jsonResult = mockMvc.perform(
-      post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
-      .andExpect(status().isOk())
-      .andReturn()
-      .getResponse()
-      .getContentAsString();
-    //@formatter:on
+        userDao.saveAll(asList(toto, titi));
 
-    // then
-    List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses).hasSize(1);
-    AssertableStory expectedSecretStory = buildAssertableStory(superSecretStory);
-    AssertableStory story = buildAssertableStory(storyResponses.get(0));
-    assertThat(story).isEqualTo(expectedSecretStory);
-  }
+        secretStory = Story.builder()
+            .author(toto)
+            .title("This is a secret story")
+            .published(true)
+            .lastModificationDate(LocalDateTime.now())
+            .build();
 
-  @Test
-  @DisplayName("No story should be found when searching with title 'This title does not exist' and author name 'Toto'")
-  public void search_TitleKOAndAuthorNameOK() throws Exception {
-    // when
-    //@formatter:off
-    StorySearch storySearch = StorySearch.builder().criteria(
-      Criteria.builder()
-        .title("This title does not exist")
-        .authorName("Toto")
-        .build()
-    ).build();
+        superSecretStory = Story.builder()
+            .author(toto)
+            .title("This story is way more secret than the other")
+            .published(true)
+            .lastModificationDate(LocalDateTime.now())
+            .build();
 
-    String jsonResult = mockMvc.perform(
-      post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
-      .andExpect(status().isOk())
-      .andReturn()
-      .getResponse()
-      .getContentAsString();
-    //@formatter:on
+        loveStory = Story.builder()
+            .author(titi)
+            .title("A story about love")
+            .published(true)
+            .lastModificationDate(LocalDateTime.now())
+            .build();
 
-    // then
-    List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses).isEmpty();
-  }
+        storyDao.saveAll(asList(secretStory, superSecretStory, loveStory));
+    }
 
-  @Test
-  @DisplayName("No story should be found when searching with title 'This is a secret story' and author name 'Juju'")
-  public void search_TitleOKAndAuthorNameKO() throws Exception {
-    // when
-    //@formatter:off
-    StorySearch storySearch = StorySearch.builder().criteria(
-      Criteria.builder()
-        .title("This is a secret story")
-        .authorName("Juju")
-        .build()
-    ).build();
+    @Test
+    @DisplayName("All stories should be returned when searching with empty criteria")
+    public void search_EmptyCriteria() throws Exception {
+        // when
+        StorySearch storySearch = StorySearch.builder().criteria(EMPTY_CRITERIA_WITHOUT_FILTER_AND_SORTING).build();
+        //@formatter:off
+        String jsonResult = mockMvc.perform(
+                post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+        //@formatter:on
 
-    String jsonResult = mockMvc.perform(
-      post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
-      .andExpect(status().isOk())
-      .andReturn()
-      .getResponse()
-      .getContentAsString();
-    //@formatter:on
+        // then
+        List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
+        assertThat(storyResponses).hasSize(3);
+        AssertableStory expectedSecretStory = buildAssertableStory(secretStory);
+        AssertableStory expectedSuperSecretStory = buildAssertableStory(superSecretStory);
+        AssertableStory expectedLoveStory = buildAssertableStory(loveStory);
+        AssertableStory story1 = buildAssertableStory(storyResponses.get(0));
+        AssertableStory story2 = buildAssertableStory(storyResponses.get(1));
+        AssertableStory story3 = buildAssertableStory(storyResponses.get(2));
+        assertThat(story1).isEqualTo(expectedSecretStory);
+        assertThat(story2).isEqualTo(expectedSuperSecretStory);
+        assertThat(story3).isEqualTo(expectedLoveStory);
+    }
 
-    // then
-    List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
-    assertThat(storyResponses).isEmpty();
-  }
+    @Test
+    @DisplayName("Should return 1 story when searching with title 'This is a secret story'")
+    public void search_TitleOK() throws Exception {
+        // when
+        //@formatter:off
+        StorySearch storySearch = StorySearch.builder().criteria(
+            StorySearch.Criteria.builder()
+                .title("This is a secret story")
+                .authorName(null)
+                .build()
+        ).build();
 
-  @AfterAll
-  void tearDown() {
-    userDao.deleteAll();
-    storyDao.deleteAll();
-  }
+        String jsonResult = mockMvc.perform(
+                post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+        //@formatter:on
 
-  private AssertableStory buildAssertableStory(Story story) {
-    return AssertableStory.builder()
-      .id(story.getId())
-      .author(AssertableUser.builder().id(story.getAuthor().getId()).build())
-      .title(story.getTitle())
-      .build();
-  }
+        // then
+        List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
+        assertThat(storyResponses).hasSize(1);
+        AssertableStory expectedSecretStory = buildAssertableStory(secretStory);
+        AssertableStory story = buildAssertableStory(storyResponses.get(0));
+        assertThat(story).isEqualTo(expectedSecretStory);
+    }
 
-  private AssertableStory buildAssertableStory(StoryResponse storyResponse) {
-    return AssertableStory.builder()
-      .id(storyResponse.getId())
-      .author(AssertableUser.builder().id(storyResponse.getAuthorId()).build())
-      .title(storyResponse.getTitle())
-      .build();
-  }
+    @Test
+    @DisplayName("Should return 1 story when searching with author name 'Titi'")
+    public void search_AuthorNameOK() throws Exception {
+        // when
+        //@formatter:off
+        StorySearch storySearch = StorySearch.builder().criteria(
+            StorySearch.Criteria.builder()
+                .title(null)
+                .authorName("Titi")
+                .build()
+        ).build();
 
-  @Getter
-  @Builder
-  @EqualsAndHashCode
-  @NoArgsConstructor
-  @AllArgsConstructor
-  private static class AssertableUser {
-    Long id;
-  }
+        String jsonResult = mockMvc.perform(
+                post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+        //@formatter:on
 
-  @Getter
-  @Builder
-  @EqualsAndHashCode
-  @NoArgsConstructor
-  @AllArgsConstructor
-  private static class AssertableStory {
-    Long id;
-    AssertableUser author;
-    String title;
-  }
+        // then
+        List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
+        assertThat(storyResponses).hasSize(1);
+        AssertableStory expectedSecretStory = buildAssertableStory(loveStory);
+        AssertableStory story = buildAssertableStory(storyResponses.get(0));
+        assertThat(story).isEqualTo(expectedSecretStory);
+    }
+
+    @Test
+    @DisplayName("Should return 1 story when searching with title 'This story is way more secret than the other' and author name 'Toto'")
+    public void search_TitleAndAuthorNameOK() throws Exception {
+        // when
+        //@formatter:off
+        StorySearch storySearch = StorySearch.builder().criteria(
+            StorySearch.Criteria.builder()
+                .title("This story is way more secret than the other")
+                .authorName("Toto")
+                .build()
+        ).build();
+
+        String jsonResult = mockMvc.perform(
+                post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+        //@formatter:on
+
+        // then
+        List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
+        assertThat(storyResponses).hasSize(1);
+        AssertableStory expectedSecretStory = buildAssertableStory(superSecretStory);
+        AssertableStory story = buildAssertableStory(storyResponses.get(0));
+        assertThat(story).isEqualTo(expectedSecretStory);
+    }
+
+    @Test
+    @DisplayName("No story should be found when searching with title 'This title does not exist' and author name 'Toto'")
+    public void search_TitleKOAndAuthorNameOK() throws Exception {
+        // when
+        //@formatter:off
+        StorySearch storySearch = StorySearch.builder().criteria(
+            StorySearch.Criteria.builder()
+                .title("This title does not exist")
+                .authorName("Toto")
+                .build()
+        ).build();
+
+        String jsonResult = mockMvc.perform(
+                post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+        //@formatter:on
+
+        // then
+        List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
+        assertThat(storyResponses).isEmpty();
+    }
+
+    @Test
+    @DisplayName("No story should be found when searching with title 'This is a secret story' and author name 'Juju'")
+    public void search_TitleOKAndAuthorNameKO() throws Exception {
+        // when
+        //@formatter:off
+        StorySearch storySearch = StorySearch.builder().criteria(
+            StorySearch.Criteria.builder()
+                .title("This is a secret story")
+                .authorName("Juju")
+                .build()
+        ).build();
+
+        String jsonResult = mockMvc.perform(
+                post("/stories/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(storySearch)))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+        //@formatter:on
+
+        // then
+        List<StoryResponse> storyResponses = JsonUtil.fromJsonArray(jsonResult, StoryResponse.class);
+        assertThat(storyResponses).isEmpty();
+    }
+
+    @AfterAll
+    void tearDown() {
+        userDao.deleteAll();
+        storyDao.deleteAll();
+    }
+
+    private AssertableStory buildAssertableStory(Story story) {
+        return AssertableStory.builder()
+            .id(story.getId())
+            .author(AssertableUser.builder().id(story.getAuthor().getId()).build())
+            .title(story.getTitle())
+            .build();
+    }
+
+    private AssertableStory buildAssertableStory(StoryResponse storyResponse) {
+        return AssertableStory.builder()
+            .id(storyResponse.getId())
+            .author(AssertableUser.builder().id(storyResponse.getAuthorId()).build())
+            .title(storyResponse.getTitle())
+            .build();
+    }
+
+    @Getter
+    @Builder
+    @EqualsAndHashCode
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class AssertableUser {
+        Long id;
+    }
+
+    @Getter
+    @Builder
+    @EqualsAndHashCode
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class AssertableStory {
+        Long id;
+        AssertableUser author;
+        String title;
+    }
 }

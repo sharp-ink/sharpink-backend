@@ -5,32 +5,17 @@ import io.sharpink.persistence.entity.forum.Thread;
 import io.sharpink.persistence.entity.user.User;
 import io.sharpink.shared.story.StoryStatus;
 import io.sharpink.shared.story.StoryType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static javax.persistence.EnumType.STRING;
-
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -44,14 +29,14 @@ public class Story implements Comparable<Story> {
     private String title;
 
     @Column
-    @Enumerated(STRING)
+    @Enumerated(EnumType.STRING)
     private StoryType type;
 
     @Column(name = "ORIGINAL_STORY")
     private boolean originalStory;
 
     @Column
-    @Enumerated(STRING)
+    @Enumerated(EnumType.STRING)
     private StoryStatus status;
 
     @Column
@@ -67,7 +52,6 @@ public class Story implements Comparable<Story> {
     private int chaptersNumber;
 
     @ManyToOne
-    @ToString.Exclude
     private User author;
 
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -84,11 +68,15 @@ public class Story implements Comparable<Story> {
     private LocalDateTime finalReleaseDate;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "thread_id")
+    @JoinColumn(name = "THREAD_ID")
     private Thread thread;
 
     @Override
     public int compareTo(Story o) {
         return this.lastModificationDate.compareTo(o.lastModificationDate);
+    }
+
+    public boolean hasChapters() {
+        return chaptersNumber >= 1;
     }
 }

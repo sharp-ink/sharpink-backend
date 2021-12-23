@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static io.sharpink.persistence.dao.story.StoryDao.hasTitleLike;
+import static io.sharpink.persistence.dao.story.StoryDao.isPublic;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +32,7 @@ class StoryDaoTest {
 
     //@formatter:off
     asList(
-      Story.builder().title("Gotham City by night").author(batman).build(),
+      Story.builder().title("Gotham City by night").author(batman).published(true).build(),
       Story.builder().title("The Dark Knight: savior of Gotham").author(batman).build(),
       Story.builder().title("Become the best developer in the universe in one month!").author(aCoder).build(),
       Story.builder().title("Did you really believe my first book's title ?").author(aCoder).build(),
@@ -39,6 +40,19 @@ class StoryDaoTest {
     ).forEach(entityManager::persist);
     entityManager.flush();
     //@formatter:on
+  }
+
+  // Tests testing the 'isPublic' Specification
+
+  @Test
+  @DisplayName("Should return only stories with a public status")
+  void findAll_isPublic() {
+    // when
+    List<Story> stories = storyDao.findAll(isPublic());
+
+    // then
+    assertThat(stories).hasSize(1);
+    assertThat(stories.get(0).getTitle()).isEqualTo("Gotham City by night");
   }
 
   // Tests testing only the 'hasTitleLike' Specification

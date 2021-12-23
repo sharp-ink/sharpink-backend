@@ -30,7 +30,7 @@ public class StoryMockUtil {
     List<Chapter> chapterListMock = new ArrayList<>();
     for (int i = 1; i <= chaptersNumber; i++) {
       chapterListMock.add(Chapter.builder()
-        .title("Chapter " + i + "  - " + RandomStringUtils.randomAlphabetic(10))
+        .title("Chapter " + i + " - " + RandomStringUtils.randomAlphabetic(10))
         .build());
     }
 
