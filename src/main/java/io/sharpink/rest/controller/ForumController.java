@@ -2,6 +2,7 @@ package io.sharpink.rest.controller;
 
 import io.sharpink.rest.dto.request.forum.MessageRequest;
 import io.sharpink.rest.dto.request.forum.ThreadRequest;
+import io.sharpink.rest.dto.request.forum.search.ThreadSearch;
 import io.sharpink.rest.dto.response.forum.ThreadResponse;
 import io.sharpink.rest.exception.CustomApiError;
 import io.sharpink.rest.exception.MissingEntity;
@@ -21,7 +22,7 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping("/threads")
 public class ForumController {
 
-  private ForumService forumService;
+  private final ForumService forumService;
 
   @Autowired
   public ForumController(ForumService forumService) {
@@ -31,6 +32,11 @@ public class ForumController {
   @GetMapping(value = "")
   public List<ThreadResponse> getThreads() {
     return forumService.getAllThreads();
+  }
+
+  @PostMapping("/search")
+  public List<ThreadResponse> search(@RequestBody ThreadSearch threadSearch) {
+    return forumService.searchThreads(threadSearch);
   }
 
   @PostMapping(value = "")

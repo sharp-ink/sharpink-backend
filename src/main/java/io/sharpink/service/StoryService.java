@@ -42,7 +42,6 @@ import static io.sharpink.rest.exception.UnprocessableEntity422ReasonEnum.TITLE_
 import static io.sharpink.shared.SortType.isDefined;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.springframework.data.jpa.domain.Specification.where;
 
 @Service
 public class StoryService {
@@ -76,7 +75,7 @@ public class StoryService {
      */
     public List<StoryResponse> getAllPublicStories(AuthorLoadingStrategy authorLoadingStrategy) {
 
-        List<Story> stories = storyDao.findAll(where(isPublic())).stream()
+        List<Story> stories = storyDao.findAll(isPublic()).stream()
             .filter(Story::hasChapters)
             .collect(toList());
 
@@ -150,9 +149,9 @@ public class StoryService {
         String title = storySearch.getCriteria().getTitle();
         String authorName = storySearch.getCriteria().getAuthorName();
 
-        List<Story> stories = storyDao.findAll(where(hasTitleLike(title))
-            .and(where(hasAuthorLike(authorName)))
-            .and(where(isPublic())));
+        List<Story> stories = storyDao.findAll(hasTitleLike(title)
+            .and(hasAuthorLike(authorName))
+            .and(isPublic()));
 
         if (storySearch.getSort() != null) {
             applySorting(stories, storySearch.getSort());

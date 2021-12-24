@@ -23,6 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,6 +35,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static io.sharpink.persistence.dao.story.StoryDao.*;
 import static io.sharpink.rest.controller.StoryMockUtil.mockStory;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -42,6 +45,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 @ExtendWith(SpringExtension.class)
 @EnableConfigurationProperties(SharpinkConfiguration.class)
@@ -73,8 +77,9 @@ class StoryServiceTest {
 
     @BeforeEach
     public void setUp() {
-        storyService = spy(new StoryService(userDaoMock, storyDaoMock, chapterDaoMock, storyMapper, userMapper, chapterMapper,
-            pictureManagementServiceMock, sharpinkConfiguration));
+        storyService = spy(
+            new StoryService(userDaoMock, storyDaoMock, chapterDaoMock, storyMapper, userMapper, chapterMapper, pictureManagementServiceMock, sharpinkConfiguration)
+        );
     }
 
     @Test

@@ -16,12 +16,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -72,12 +70,6 @@ class UserControllerTest {
             .build();
 
         storyDao.saveAll(List.of(story1_Gotham_by_night, story2_Ode_to_my_Bat_family, story3_Superman_is_gay));
-    }
-
-    @AfterAll
-    void tearDown() {
-        userDao.deleteAll();
-        storyDao.deleteAll();
     }
 
     @Test
@@ -238,6 +230,12 @@ class UserControllerTest {
     assertThat(updatedUserPreferencesDto).isNotNull();
   }
   */
+
+    @AfterAll
+    void tearDown() {
+        userDao.deleteAll();
+        storyDao.deleteAll();
+    }
 
     private AssertableUser buildAssertableUser(User user) {
         return AssertableUser.builder().id(user.getId()).nickname(user.getNickname()).build();

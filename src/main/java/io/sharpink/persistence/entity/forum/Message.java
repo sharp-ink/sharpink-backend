@@ -1,17 +1,18 @@
 package io.sharpink.persistence.entity.forum;
 
 import io.sharpink.persistence.entity.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static java.util.Comparator.naturalOrder;
 
 @Entity
 @Table(name = "FORUM_MESSAGE")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,7 +22,7 @@ public class Message implements Comparable<Message> {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   protected Long id;
 
-  @ManyToOne(optional = false)
+  @ManyToOne
   protected Thread thread;
 
   @ManyToOne(optional = false)

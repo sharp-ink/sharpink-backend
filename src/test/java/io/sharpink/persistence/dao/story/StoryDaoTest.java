@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import static io.sharpink.persistence.dao.story.StoryDao.hasTitleLike;
 import static io.sharpink.persistence.dao.story.StoryDao.isPublic;
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -28,10 +28,10 @@ class StoryDaoTest {
     User batman = User.builder().nickname("Batman").build();
     User aCoder = User.builder().nickname("John Doe").build();
 
-    asList(batman, aCoder).forEach(entityManager::persist);
+    List.of(batman, aCoder).forEach(entityManager::persist);
 
     //@formatter:off
-    asList(
+    List.of(
       Story.builder().title("Gotham City by night").author(batman).published(true).build(),
       Story.builder().title("The Dark Knight: savior of Gotham").author(batman).build(),
       Story.builder().title("Become the best developer in the universe in one month!").author(aCoder).build(),
