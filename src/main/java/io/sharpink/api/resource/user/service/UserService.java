@@ -1,5 +1,10 @@
 package io.sharpink.api.resource.user.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import io.sharpink.api.resource.story.dto.StoryResponse;
 import io.sharpink.api.resource.story.enums.ChaptersLoadingStrategy;
 import io.sharpink.api.resource.story.persistence.Story;
@@ -10,7 +15,6 @@ import io.sharpink.api.resource.user.dto.preferences.UserPreferencesDto;
 import io.sharpink.api.resource.user.persistence.UserDao;
 import io.sharpink.api.resource.user.persistence.user.User;
 import io.sharpink.api.resource.user.persistence.user.UserDetails;
-import io.sharpink.api.resource.user.persistence.user.UserPreferences;
 import io.sharpink.api.shared.enums.StoriesLoadingStrategy;
 import io.sharpink.api.shared.exception.InternalError500Exception;
 import io.sharpink.api.shared.exception.MissingEntity;
@@ -37,6 +41,8 @@ public class UserService {
     private final StoryMapper storyMapper;
     private final PictureManagementService pictureManagementService;
     private final SharpinkConfiguration sharpinkConfiguration;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     public UserService(UserDao userDao, UserMapper userMapper, StoryMapper storyMapper,
@@ -121,19 +127,31 @@ public class UserService {
     public UserPreferencesDto getPreferences(Long userId) {
         User user = userDao.findById(userId)
             .orElseThrow(() -> new NotFound404Exception(MissingEntity.USER, "User not found for id=" + userId));
-        if (user.getUserPreferences().isPresent()) {
-            return userMapper.toUserPreferencesDto(user.getUserPreferences().get());
-        } else {
-            return new UserPreferencesDto();
-        }
+        return user.getUserPreferences().map(userMapper::toUserPreferencesDto)
+            .orElseGet(UserPreferencesDto::new);
     }
 
-    public UserPreferencesDto updateUserPreferences(Long userId, UserPreferencesDto userPreferencesDto) {
-        User user = userDao.findById(userId).orElseThrow(() -> new NotFound404Exception(MissingEntity.USER, "User not found for id=" + userId));
-        UserPreferences userPreferences = userMapper.toUserPreferences(userPreferencesDto);
-        userPreferences.setUser(user);
-        user.setUserPreferences(userPreferences);
-        userDao.save(user);
-        return userMapper.toUserPreferencesDto(userPreferences);
+    public UserPreferencesDto updateUserPreferences(Long userId, JsonPatch userPreferencesJsonPatch) {
+        try {
+            var user = userDao.findById(userId)
+                .orElseThrow(() -> new NotFound404Exception(MissingEntity.USER, "User not found for id=" + userId));
+
+            var userPreferencesDto = user.getUserPreferences().map(userMapper::toUserPreferencesDto)
+                .orElseGet(UserPreferencesDto::new);
+
+            var patchedJsonNode = userPreferencesJsonPatch.apply(objectMapper.convertValue(userPreferencesDto, JsonNode.class));
+            var patchedUserPreferencesDto = objectMapper.treeToValue(patchedJsonNode, UserPreferencesDto.class);
+
+            var userPreferences = userMapper.toUserPreferences(patchedUserPreferencesDto);
+            userPreferences.setUser(user);
+            user.setUserPreferences(userPreferences);
+            userDao.save(user);
+
+            return patchedUserPreferencesDto;
+        } catch (JsonPatchException | JsonProcessingException e) {
+            throw new InternalError500Exception(e);
+        }
+
+
     }
 }

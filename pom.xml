@@ -54,6 +54,13 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- Handle JSON Patch format for PATCH requests -->
+    <dependency>
+      <groupId>com.github.java-json-tools</groupId>
+      <artifactId>json-patch</artifactId>
+      <version>1.13</version>
+    </dependency>
+
     <!-- TEST -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

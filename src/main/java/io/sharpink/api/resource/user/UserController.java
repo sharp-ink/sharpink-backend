@@ -1,5 +1,6 @@
 package io.sharpink.api.resource.user;
 
+import com.github.fge.jsonpatch.JsonPatch;
 import io.sharpink.api.resource.user.dto.UserPatchRequest;
 import io.sharpink.api.resource.user.dto.UserResponse;
 import io.sharpink.api.resource.user.dto.preferences.UserPreferencesDto;
@@ -53,13 +54,8 @@ public class UserController {
         return userService.updateUser(id, userPatchRequest);
     }
 
-    @GetMapping("/{id}/preferences")
-    public UserPreferencesDto getUserPreferences(@PathVariable Long id) {
-        return userService.getPreferences(id);
-    }
-
-    @PutMapping("/{id}/preferences")
-    public UserPreferencesDto updateUserPreferences(@PathVariable Long id, @RequestBody UserPreferencesDto userPreferencesDto) {
-        return userService.updateUserPreferences(id, userPreferencesDto);
+    @PatchMapping(value = "/{id}/preferences", consumes = "application/json-patch+json")
+    public UserPreferencesDto updateUserPreferences(@PathVariable Long id, @RequestBody JsonPatch userPreferencesJsonPatch) {
+        return userService.updateUserPreferences(id, userPreferencesJsonPatch);
     }
 }
