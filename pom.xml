@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.3.5.RELEASE</version>
+    <version>2.6.2</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
@@ -18,7 +18,7 @@
   <description>SharpInk - Backend</description>
 
   <properties>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <!-- Dependencies versions -->
     <io.sharpink.common.version>1.0.0-SNAPSHOT</io.sharpink.common.version>
     <mockito.version>4.2.0</mockito.version>
