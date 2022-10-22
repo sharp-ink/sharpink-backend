@@ -1,5 +1,6 @@
 package io.sharpink.api.resource.forumThread.service;
 
+import io.sharpink.api.resource.forumThread.dto.ForumMessageResponse;
 import io.sharpink.api.resource.story.persistence.Story;
 import io.sharpink.api.resource.story.persistence.StoryDao;
 import io.sharpink.api.resource.forumThread.dto.ForumMessageRequest;
@@ -130,5 +131,10 @@ public class ForumThreadService {
         ForumThread thread = forumThreadDao.findById(id).orElseThrow();
         thread.getMessages().removeIf(message -> message.getNumber() == number);
         forumThreadDao.save(thread);
+    }
+
+    public ForumMessageResponse getLastPublishedMessage() {
+        var lastPublishedMessage = forumMessageDao.findFirstByOrderByPublicationDateDesc();
+        return forumMessageMapper.toMessageResponse(lastPublishedMessage);
     }
 }

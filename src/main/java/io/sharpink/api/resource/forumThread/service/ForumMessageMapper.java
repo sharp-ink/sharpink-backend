@@ -15,6 +15,7 @@ public class ForumMessageMapper {
     return ForumMessageResponse.builder()
       .id(source.getId())
       .threadId(source.getThread().getId())
+      .threadTitle(source.getThread().getTitle())
       .authorId(source.getAuthor().getId())
       .authorNickname(source.getAuthor().getNickname())
       .publicationDate(source.getPublicationDate())

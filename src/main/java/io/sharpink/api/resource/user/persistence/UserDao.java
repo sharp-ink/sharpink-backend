@@ -2,13 +2,13 @@ package io.sharpink.api.resource.user.persistence;
 
 import io.sharpink.api.resource.user.persistence.user.User;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserDao extends CrudRepository<User, Long> {
+public interface UserDao extends PagingAndSortingRepository<User, Long> {
 
 	/**
 	 * Retrieve user with given login + password.<br/>

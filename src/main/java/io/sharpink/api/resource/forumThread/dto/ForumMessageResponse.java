@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class ForumMessageResponse {
     private Long id;
     private Long threadId;
+    private String threadTitle;
     private Long authorId;
     private String authorNickname;
     @JsonFormat(pattern = "yyyyMMdd HH:mm:ss.SSSSSS")

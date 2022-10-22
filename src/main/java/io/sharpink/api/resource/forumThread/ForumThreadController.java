@@ -1,6 +1,7 @@
 package io.sharpink.api.resource.forumThread;
 
 import io.sharpink.api.resource.forumThread.dto.ForumMessageRequest;
+import io.sharpink.api.resource.forumThread.dto.ForumMessageResponse;
 import io.sharpink.api.resource.forumThread.dto.ForumThreadRequest;
 import io.sharpink.api.resource.forumThread.dto.search.ForumThreadSearch;
 import io.sharpink.api.resource.forumThread.dto.ForumThreadResponse;
@@ -83,5 +84,10 @@ public class ForumThreadController {
     public ResponseEntity<?> removeMessage(@PathVariable Long id, @PathVariable int messageNumber) {
         forumThreadService.removeMessage(id, messageNumber);
         return new ResponseEntity<>(NO_CONTENT);
+    }
+
+    @GetMapping("/last-forum-message")
+    public ForumMessageResponse getLastPublishedMessage() {
+        return forumThreadService.getLastPublishedMessage();
     }
 }

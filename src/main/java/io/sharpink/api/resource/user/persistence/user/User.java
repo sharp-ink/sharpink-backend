@@ -6,6 +6,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +24,17 @@ public class User {
     protected Long id;
 
     // Main information, mandatory
+    @Column(nullable = false)
     protected String nickname;
+
+    @Column(nullable = false)
     protected String email;
+
+    @Column(nullable = false)
     protected String password;
+
+    @Column(nullable = false)
+    protected LocalDateTime registrationDate;
 
     // Complementary information, optional
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

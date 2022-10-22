@@ -1,9 +1,8 @@
 package io.sharpink.api.resource.story.persistence;
 
-import io.sharpink.api.resource.story.persistence.Story;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 
 @Repository
-public interface StoryDao extends CrudRepository<Story, Long>, JpaSpecificationExecutor<Story> {
+public interface StoryDao extends PagingAndSortingRepository<Story, Long>, JpaSpecificationExecutor<Story> {
 
   List<Story> findByAuthorId(Long authorId);
 

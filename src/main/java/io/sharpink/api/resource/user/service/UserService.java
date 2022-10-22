@@ -23,6 +23,10 @@ import io.sharpink.api.shared.service.picture.PictureManagementService;
 import io.sharpink.config.SharpinkConfiguration;
 import io.sharpink.util.PictureUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -56,7 +60,7 @@ public class UserService {
     }
 
     public List<UserResponse> getAllUsers() {
-        List<User> users = (List<User>) userDao.findAll();
+        var users = (List<User>) userDao.findAll();
         return userMapper.toUserResponseList(users, StoriesLoadingStrategy.DISABLED);
     }
 
@@ -153,5 +157,15 @@ public class UserService {
         }
 
 
+    }
+
+    public List<UserResponse> getLastRegisteredUsers() {
+        var users = (List<User>) userDao.findAll(Sort.by(Direction.DESC, "registrationDate"));
+        return userMapper.toUserResponseList(users, StoriesLoadingStrategy.DISABLED);
+    }
+
+    public Page<UserResponse> getLastRegisteredUsers(int limit) {
+        var usersPage = userDao.findAll(PageRequest.of(0, limit, Direction.DESC, "registrationDate"));
+        return usersPage.map(user -> userMapper.toUserResponse(user, StoriesLoadingStrategy.DISABLED));
     }
 }

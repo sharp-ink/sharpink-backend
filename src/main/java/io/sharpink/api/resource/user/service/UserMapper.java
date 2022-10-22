@@ -30,19 +30,9 @@ public class UserMapper {
     }
 
     /**
-     * Construit un objet {@code UserResponse} à partir d'un objet {@code User}.
+     * Build a {@code UserResponse} from a {@code User}.
      *
-     * @param source                 L'entité {@code User} à partir de laquelle on
-     *                               construit notre objet.
-     * @param storiesLoadingStrategy Indique s'il faut ou non charger la liste des
-     *                               histoires, qui est pour rappel chargé par Hibernate
-     *                               avec
-     *                               l'annotation @LazyCollection(LazyCollectionOption.TRUE),
-     *                               donc seulement quand on y accède réellement. <br/>
-     *                               true : charge les histoires, false : ne charge pas
-     *                               les histoires (on se contente du nombre total
-     *                               d'histoires qui, lui, est toujours chargé)
-     * @return Un {@code User}
+     * @param storiesLoadingStrategy Indicates if stories should be greedily loaded (by default Hibernate loads them lazily)
      */
     public UserResponse toUserResponse(User source, StoriesLoadingStrategy storiesLoadingStrategy) {
         UserResponse target = UserResponse.builder()
@@ -50,13 +40,14 @@ public class UserMapper {
             .nickname(source.getNickname())
             .email(source.getEmail())
             .storiesCount(source.getStoriesCount())
+            .registrationDate(source.getRegistrationDate())
             .userDetails(source.getUserDetails().isPresent() ? toUserDetailsResponse(source.getUserDetails().get()) : null)
             .userPreferences(source.getUserPreferences().isPresent() ? toUserPreferencesDto(source.getUserPreferences().get()) : null)
             .build();
 
-        // on ne charge les histoires que si demandé
+        // we load stories only if requested
         if (storiesLoadingStrategy == StoriesLoadingStrategy.ENABLED) {
-            // meme si on veut les histoires, on ne veut pas charger les chapitres
+            // even when we want stories, we don't load chapters
             target.setStories(storyMapper.toStoryResponseList(source.getStories(), ChaptersLoadingStrategy.NONE));
         }
 

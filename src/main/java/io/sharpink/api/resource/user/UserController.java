@@ -58,4 +58,12 @@ public class UserController {
     public UserPreferencesDto updateUserPreferences(@PathVariable Long id, @RequestBody JsonPatch userPreferencesJsonPatch) {
         return userService.updateUserPreferences(id, userPreferencesJsonPatch);
     }
+
+    /**
+     * Returns the list of the 3 most recently registered users, by descending registration date.
+     */
+    @GetMapping("/last-registered-users")
+    public List<UserResponse> getLastRegisteredUsers() {
+        return userService.getLastRegisteredUsers(4).toList();
+    }
 }
