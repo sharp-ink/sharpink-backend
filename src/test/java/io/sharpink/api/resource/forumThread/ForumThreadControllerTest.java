@@ -45,16 +45,17 @@ class ForumThreadControllerTest {
     ForumThread thread_Loca;
 
     private final ForumThreadSearch EMPTY_CRITERIA_WITHOUT_FILTER_AND_SORTING = ForumThreadSearch.builder()
-        .criteria(ForumThreadSearch.Criteria.builder()
-            .title(null)
-            .authorName(null)
-            .keyWords(null).build())
-        .filter(null)
-        .sort(null).build();
+            .criteria(ForumThreadSearch.Criteria.builder()
+                    .title(null)
+                    .authorName(null)
+                    .keyWords(null).build())
+            .filter(null)
+            .sort(null).build();
 
     @BeforeAll
     void init() {
-        shakira = User.builder().nickname("Shakira Isabel Mebarak Ripoll").build();
+        shakira = User.builder().nickname("Shakira Isabel Mebarak Ripoll").email("shakira@shakira.co").password("Contraseña123")
+                .registrationDate(LocalDateTime.now()).build();
         userDao.save(shakira);
 
         thread_HipsDontLie = ForumThread.builder().author(shakira).title("Hips don't lie").creationDate(now()).build();
@@ -69,8 +70,8 @@ class ForumThreadControllerTest {
     void getThreads() throws Exception {
         // when
         String jsonResult = mockMvc.perform(get("/threads"))
-            .andExpect(status().isOk())
-            .andReturn().getResponse().getContentAsString();
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
         // then
         List<ForumThreadResponse> threadsResponses = JsonUtil.fromJsonArray(jsonResult, ForumThreadResponse.class);
@@ -91,9 +92,9 @@ class ForumThreadControllerTest {
     void search_EmptyCriteria() throws Exception {
         // when
         String jsonResult = mockMvc.perform(
-                post("/threads/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(EMPTY_CRITERIA_WITHOUT_FILTER_AND_SORTING)))
-            .andExpect(status().isOk())
-            .andReturn().getResponse().getContentAsString();
+                        post("/threads/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(EMPTY_CRITERIA_WITHOUT_FILTER_AND_SORTING)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
         // then
         List<ForumThreadResponse> threadsResponses = JsonUtil.fromJsonArray(jsonResult, ForumThreadResponse.class);
@@ -115,9 +116,9 @@ class ForumThreadControllerTest {
         // when
         ForumThreadSearch threadSearch = ForumThreadSearch.builder().criteria(ForumThreadSearch.Criteria.builder().title("waka").build()).build();
         String jsonResult = mockMvc.perform(
-                post("/threads/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(threadSearch)))
-            .andExpect(status().isOk())
-            .andReturn().getResponse().getContentAsString();
+                        post("/threads/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(threadSearch)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
         // then
         List<ForumThreadResponse> threadsResponses = JsonUtil.fromJsonArray(jsonResult, ForumThreadResponse.class);
@@ -133,9 +134,9 @@ class ForumThreadControllerTest {
         // when
         ForumThreadSearch threadSearch = ForumThreadSearch.builder().criteria(ForumThreadSearch.Criteria.builder().title("test").build()).build();
         String jsonResult = mockMvc.perform(
-                post("/threads/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(threadSearch)))
-            .andExpect(status().isOk())
-            .andReturn().getResponse().getContentAsString();
+                        post("/threads/search").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(threadSearch)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
         // then
         List<ForumThreadResponse> threadsResponses = JsonUtil.fromJsonArray(jsonResult, ForumThreadResponse.class);
@@ -150,18 +151,18 @@ class ForumThreadControllerTest {
 
     private AssertableThread buildAssertableThread(ForumThread thread) {
         return AssertableThread.builder()
-            .id(thread.getId())
-            .author(AssertableUser.builder().id(thread.getAuthor().getId()).build())
-            .title(thread.getTitle())
-            .build();
+                .id(thread.getId())
+                .author(AssertableUser.builder().id(thread.getAuthor().getId()).build())
+                .title(thread.getTitle())
+                .build();
     }
 
     private AssertableThread buildAssertableThread(ForumThreadResponse forumThreadResponse) {
         return AssertableThread.builder()
-            .id(forumThreadResponse.getId())
-            .author(AssertableUser.builder().id(forumThreadResponse.getAuthorId()).build())
-            .title(forumThreadResponse.getTitle())
-            .build();
+                .id(forumThreadResponse.getId())
+                .author(AssertableUser.builder().id(forumThreadResponse.getAuthorId()).build())
+                .title(forumThreadResponse.getTitle())
+                .build();
     }
 
     @Getter

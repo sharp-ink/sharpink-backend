@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.Optional;
 
+import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,9 +27,9 @@ class UserDaoTest {
     void init() {
         //@formatter:off
         asList(
-            User.builder().nickname("TheBitchWhoWantedToBeAQueen").email("cersei.lannister@westeros.org").password("POW3R_15_POW3R").build(),
-            User.builder().nickname("PlzDontCutMyHeaaaaadAaargh").email("ned_stark@westeros.org").password("Winteriscoming123").build(),
-            User.builder().nickname("Dany T.").email("mother_of_dragons@westeros.org").password("dracarys").build()
+            User.builder().nickname("TheBitchWhoWantedToBeAQueen").email("cersei.lannister@westeros.org").password("POW3R_15_POW3R").registrationDate(now()).build(),
+            User.builder().nickname("PlzDontCutMyHeaaaaadAaargh").email("ned_stark@westeros.org").password("Winteriscoming123").registrationDate(now()).build(),
+            User.builder().nickname("Dany T.").email("mother_of_dragons@westeros.org").password("dracarys").registrationDate(now()).build()
         ).forEach(entityManager::persist);
         entityManager.flush();
         //@formatter:on

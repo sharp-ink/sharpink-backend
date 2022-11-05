@@ -49,8 +49,8 @@ class UserControllerTest {
 
     @BeforeAll
     void init() {
-        batman = User.builder().nickname("Batman").build();
-        john = User.builder().nickname("John Doe").build();
+        batman = User.builder().nickname("Batman").email("batman@gotham.city").password("I4mB4tm4n").registrationDate(LocalDateTime.now()).build();
+        john = User.builder().nickname("John Doe").email("john@doe.com").password("Password123").registrationDate(LocalDateTime.now()).build();
 
         userDao.saveAll(List.of(batman, john));
 
@@ -104,7 +104,7 @@ class UserControllerTest {
 
 
         // then
-        AssertableUser user = JsonUtil.fromJson(jsonResult, AssertableUser.class);
+        AssertableUser user = buildAssertableUser(JsonUtil.fromJson(jsonResult, UserResponse.class));
         AssertableUser expectedUserBatman = buildAssertableUser(batman);
         assertThat(user).isEqualTo(expectedUserBatman);
     }

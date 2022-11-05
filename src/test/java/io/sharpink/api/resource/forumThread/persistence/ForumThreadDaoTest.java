@@ -35,8 +35,8 @@ class ForumThreadDaoTest {
 
     @BeforeEach
     void init() {
-        User arseneLupin = User.builder().nickname("gentleman-cambrioleur").build();
-        User sherlockHolmes = User.builder().nickname("Sherlock_The_Door").build();
+        User arseneLupin = User.builder().nickname("gentleman-cambrioleur").email("arsene@lupin.com").password("Password123").registrationDate(now()).build();
+        User sherlockHolmes = User.builder().nickname("Sherlock_The_Door").email("sherlock@holmes.com").password("Password123").registrationDate(now()).build();
         List.of(arseneLupin, sherlockHolmes).forEach(entityManager::persist);
 
         thread1 = ForumThread.builder().title("Thief but gentleman").author(arseneLupin).creationDate(now()).build();

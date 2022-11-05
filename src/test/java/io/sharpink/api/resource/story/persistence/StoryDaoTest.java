@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
 import static io.sharpink.api.resource.story.persistence.StoryDao.hasTitleLike;
 import static io.sharpink.api.resource.story.persistence.StoryDao.isPublic;
+import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -26,8 +28,8 @@ class StoryDaoTest {
 
   @BeforeEach
   void init() {
-    User batman = User.builder().nickname("Batman").build();
-    User aCoder = User.builder().nickname("John Doe").build();
+    User batman = User.builder().nickname("Batman").email("batman@gotham.com").password("I4mB4tm4n").registrationDate(now()).build();
+    User aCoder = User.builder().nickname("John Doe").email("john@doe.com").password("Password123").registrationDate(now()).build();
 
     List.of(batman, aCoder).forEach(entityManager::persist);
 

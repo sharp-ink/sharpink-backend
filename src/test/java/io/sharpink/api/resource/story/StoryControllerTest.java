@@ -1,23 +1,15 @@
 package io.sharpink.api.resource.story;
 
 import io.sharpink.SharpInkBackendApplication;
+import io.sharpink.api.resource.story.dto.StoryResponse;
+import io.sharpink.api.resource.story.dto.search.StorySearch;
+import io.sharpink.api.resource.story.persistence.Story;
 import io.sharpink.api.resource.story.persistence.StoryDao;
 import io.sharpink.api.resource.user.persistence.UserDao;
-import io.sharpink.api.resource.story.persistence.Story;
 import io.sharpink.api.resource.user.persistence.user.User;
-import io.sharpink.api.resource.story.dto.search.StorySearch;
-import io.sharpink.api.resource.story.dto.StoryResponse;
 import io.sharpink.util.JsonUtil;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import lombok.*;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,8 +51,8 @@ class StoryControllerTest {
 
     @BeforeAll
     void init() {
-        toto = User.builder().nickname("Toto").build();
-        titi = User.builder().nickname("Titi").build();
+        toto = User.builder().nickname("Toto").email("toto@toto.com").password("Toto123").registrationDate(now()).build();
+        titi = User.builder().nickname("Titi").email("titi@titi.com").password("Titi456").registrationDate(now()).build();
 
         userDao.saveAll(asList(toto, titi));
 
