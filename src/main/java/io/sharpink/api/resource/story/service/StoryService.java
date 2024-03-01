@@ -192,6 +192,7 @@ public class StoryService {
 
             if (isNotEmpty(storyPatchRequest.getThumbnail())) {
                 String formImageData = storyPatchRequest.getThumbnail();
+                String imageBase64Content = PictureUtil.extractBase64Content(formImageData);
                 String extension = PictureUtil.extractExtension(formImageData);
                 String storyThumbnailWebUrl = sharpinkConfiguration.getUsersProfilePictureWebUrl() + '/' + story.getAuthor()
                     .getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
@@ -199,7 +200,7 @@ public class StoryService {
                 try {
                     String storyThumbnailFSPath = sharpinkConfiguration.getUsersProfilePictureFileSystemPath() + '/' + story.getAuthor()
                         .getNickname() + "/stories/" + story.getId() + "/thumbnail." + extension;
-                    pictureManagementService.storePictureOnFileSystem(formImageData, storyThumbnailFSPath);
+                    pictureManagementService.storePictureOnFileSystem(imageBase64Content, storyThumbnailFSPath);
                 } catch (IOException e) {
                     e.printStackTrace(); // TODO: use a logger instead
                     throw new InternalError500Exception(e);
