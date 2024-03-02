@@ -104,16 +104,23 @@ public class UserService {
 
         // update profile picture (if any) and store it on the file system
         if (isNotEmpty(userPatchRequest.getProfilePicture())) {
-            String nickname = user.getNickname();
-            String extension = PictureUtil.extractExtension(userPatchRequest.getProfilePicture());
-            String profilePictureWebUrl = sharpinkConfiguration.getUsersProfilePictureWebUrl() + '/' + nickname + '/' + nickname + '.' + extension;
-            newUserDetails.setProfilePicture(profilePictureWebUrl);
-            try {
-                String profilePictureBase64Content = PictureUtil.extractBase64Content(userPatchRequest.getProfilePicture());
-                String profilePictureFSPath = sharpinkConfiguration.getUsersProfilePictureFileSystemPath() + '/' + nickname + '/' + nickname + '.' + extension;
-                pictureManagementService.storePictureOnFileSystem(profilePictureBase64Content, profilePictureFSPath);
-            } catch (IOException e) {
-                throw new InternalError500Exception(e);
+            var pictureString = userPatchRequest.getProfilePicture();
+
+            // case of an uploaded base64 image
+            if (PictureUtil.isBase64Image(pictureString)) {
+                String nickname = user.getNickname();
+                String extension = PictureUtil.extractExtension(pictureString);
+                String profilePictureWebUrl = sharpinkConfiguration.getUsersProfilePictureWebUrl() + '/' + nickname + '/' + nickname + '.' + extension;
+                newUserDetails.setProfilePicture(profilePictureWebUrl);
+                try {
+                    String profilePictureBase64Content = PictureUtil.extractBase64Content(pictureString);
+                    String profilePictureFSPath = sharpinkConfiguration.getUsersProfilePictureFileSystemPath() + '/' + nickname + '/' + nickname + '.' + extension;
+                    pictureManagementService.storePictureOnFileSystem(profilePictureBase64Content, profilePictureFSPath);
+                } catch (IOException e) {
+                    throw new InternalError500Exception(e);
+                }
+            } else { // case of an external URL
+                newUserDetails.setProfilePicture(pictureString);
             }
         } else if (user.getUserDetails().isPresent() && user.getUserDetails().get().getProfilePicture() != null) {
             // keep old profile picture (if there was one)

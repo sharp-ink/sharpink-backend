@@ -2,6 +2,10 @@ package io.sharpink.util;
 
 public interface PictureUtil {
 
+  static boolean isBase64Image(String imageString) {
+    return imageString.startsWith("data:image");
+  }
+
   /**
    * Extract the base64 representation of the image contained in the form data
    * @param formImageData the image obtained from a html form, in base64 format and with html metadata
